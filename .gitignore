@@ -11,6 +11,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+#Enviroment Varibles and credentials 
+.env 
+
 # OS
 .DS_Store
 
