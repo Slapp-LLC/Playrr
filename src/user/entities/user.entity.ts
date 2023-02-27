@@ -12,6 +12,10 @@ export class User {
   email: string;
   @Column()
   password: string;
+
   @Column()
   age: number;
+
+  @Column({ nullable: true })
+  googleId: string;
 }
