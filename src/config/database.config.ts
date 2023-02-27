@@ -19,7 +19,6 @@ const databaseConfig = {
   migrationsRun: true,
   seeds: [__dirname + '/../database/seeds/**/*{.ts,.js}'],
   factories: [__dirname + '/../database/factories/**/*{.ts,.js}'],
-  logging: true,
 };
 
 export default databaseConfig;

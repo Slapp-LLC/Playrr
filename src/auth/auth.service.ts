@@ -1,26 +1,66 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { RegisterDto } from './dto/register.dto';
+import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+//TODO: All User Methods move to Users Services
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(
+    private usersService: UserService,
+    private jwtService: JwtService,
+  ) {}
+
+  async register(userData: RegisterDto): Promise<any> {
+    const user = await this.usersService.findByEmail(userData.email);
+    if (user) {
+      throw new BadRequestException('User with this email already exists');
+    }
+    try {
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      const formatedUser = { ...userData, password: hashedPassword };
+      const newUser = await this.usersService.createUser(formatedUser);
+      return newUser;
+    } catch (error) {
+      throw new Error(`Failed to register user: ${error.message}`);
+    }
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async login(user: any) {
+    const payload = { email: user.email, sub: user.id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new BadRequestException('Invalid Credentials');
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      throw new BadRequestException('Invalid Credentials');
+    }
+
+    const { password: _, ...result } = user;
+    return result;
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async validateUserById(id: number): Promise<any> {
+    const user = await this.usersService.findById(id);
+    if (user) {
+      const { password, ...result } = user;
+      return result;
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 }
