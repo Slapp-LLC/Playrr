@@ -5,6 +5,7 @@ import {
   Body,
   UseGuards,
   Request,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User } from '../user/entities/user.entity';
@@ -20,6 +21,22 @@ export class AuthController {
   @Post('register')
   async create(@Body() user: RegisterDto): Promise<User> {
     return this.authService.register(user);
+  }
+
+  @UseGuards(AuthGuard('google'))
+  @Get('google')
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async googleAuth(): Promise<void> {}
+
+  @UseGuards(AuthGuard('google'))
+  @Get('google/callback')
+  async googleAuthRedirect(@Req() req): Promise<any> {
+    const { access_token, token, user } = req.user;
+    return {
+      token,
+      user,
+      access_token,
+    };
   }
 
   @UseGuards(LocalAuthGuard)

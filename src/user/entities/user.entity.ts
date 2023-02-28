@@ -10,10 +10,11 @@ export class User {
   lastName: string;
   @Column()
   email: string;
-  @Column()
+
+  @Column({ nullable: true })
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   age: number;
 
   @Column({ nullable: true })
