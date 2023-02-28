@@ -12,6 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { FacebookStrategy } from './strategies/facebook.strategy';
 @Module({
   imports: [
     UserModule,
@@ -29,6 +30,12 @@ import { GoogleStrategy } from './strategies/google.strategy';
   ],
   controllers: [AuthController],
   exports: [PassportModule, JwtModule, AuthService],
-  providers: [AuthService, GoogleStrategy, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    GoogleStrategy,
+    LocalStrategy,
+    JwtStrategy,
+    FacebookStrategy,
+  ],
 })
 export class AuthModule {}
