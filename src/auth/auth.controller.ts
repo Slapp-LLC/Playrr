@@ -14,6 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { LoginDto } from './dto/login.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -23,12 +24,12 @@ export class AuthController {
     return this.authService.register(user);
   }
 
-  @UseGuards(AuthGuard('google'))
+  @UseGuards(GoogleAuthGuard)
   @Get('google')
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async googleAuth(): Promise<void> {}
 
-  @UseGuards(AuthGuard('google'))
+  @UseGuards(GoogleAuthGuard)
   @Get('google/callback')
   async googleAuthRedirect(@Req() req): Promise<any> {
     const { access_token, token, user } = req.user;
