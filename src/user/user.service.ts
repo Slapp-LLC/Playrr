@@ -1,6 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { editProfileDto } from './dto/editProfile.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { User } from './entities/user.entity';
 
@@ -49,5 +54,36 @@ export class UserService {
     } catch (error) {
       throw new Error(`Failed to create user: ${error.message}`);
     }
+  }
+  async editUser(
+    userId: number,
+    userData: editProfileDto,
+    user: User,
+  ): Promise<any> {
+    if (+userId !== +user.id) {
+      throw new UnauthorizedException(
+        'You are not authorized to edit this profile',
+      );
+    }
+
+    const { name, lastName, age } = userData;
+
+    const updatedUser = {
+      ...user,
+      name: name ?? user.name,
+      lastName: lastName ?? user.lastName,
+      age: age ?? user.age,
+    };
+
+    return this.userRepository.save(updatedUser);
+  }
+
+  async deleteUser(userId: number, user: User): Promise<any> {
+    if (+userId !== +user.id) {
+      throw new UnauthorizedException(
+        'You are not authorized to edit this profile',
+      );
+    }
+    return this.userRepository.delete(userId);
   }
 }
