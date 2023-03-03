@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { editProfileDto } from './dto/editProfile.dto';
+import { GoogleSignUpDto } from './dto/googleSignUp.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { User } from './entities/user.entity';
 
@@ -26,27 +27,19 @@ export class UserService {
     return result;
   }
 
-  async findOrCreate(
-    googleId: string,
-    email: string,
-    name: string,
-    lastName: string,
-  ): Promise<any> {
-    let user = await this.userRepository.findOne({ googleId });
+  async findOrCreate(newUser: GoogleSignUpDto): Promise<any> {
+    const { googleId } = newUser;
+    const user = await this.userRepository.findOne({ googleId: googleId });
     if (!user) {
-      user = this.userRepository.create({ googleId, email, name, lastName });
-      await this.userRepository.save(user);
+      newUser = this.userRepository.create(newUser);
+      return await this.userRepository.save(newUser);
     }
     return user;
   }
 
   async createUser(userData: any): Promise<any> {
-    const user = new User();
-    user.email = userData.email;
-    user.password = userData.password;
-    user.name = userData.name;
-    user.lastName = userData.lastName;
-    user.age = userData.age;
+    let user = new User();
+    user = { ...userData };
     try {
       const newUser = await this.userRepository.save(user);
       const { password: _, ...result } = newUser;
@@ -84,6 +77,11 @@ export class UserService {
         'You are not authorized to edit this profile',
       );
     }
-    return this.userRepository.delete(userId);
+    try {
+      this.userRepository.delete(userId);
+      return;
+    } catch (error) {
+      throw new Error(`Failed to delete user: ${error.message}`);
+    }
   }
 }

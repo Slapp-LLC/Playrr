@@ -4,7 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RegisterDto } from './dto/register.dto';
+import { RegisterDto } from './dto/LocalRegister.dto';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
@@ -28,7 +28,6 @@ export class AuthService {
         const hashedPassword = await bcrypt.hash(userData.password, 10);
         const formatedUser = { ...userData, password: hashedPassword };
         const newUser = await this.usersService.createUser(formatedUser);
-
         return newUser;
       } else {
         throw new Error(`Contraseña sin completar`);
