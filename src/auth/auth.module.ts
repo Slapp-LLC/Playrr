@@ -10,11 +10,13 @@ import { UserModule } from '../user/user.module'; // <-- import UserModule here
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GoogleStrategy } from './strategies/google.strategy';
 @Module({
   imports: [
     UserModule,
     PassportModule,
+    ConfigModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => {
         return {
@@ -27,6 +29,6 @@ import { ConfigService } from '@nestjs/config';
   ],
   controllers: [AuthController],
   exports: [PassportModule, JwtModule, AuthService],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, GoogleStrategy, LocalStrategy, JwtStrategy],
 })
 export class AuthModule {}

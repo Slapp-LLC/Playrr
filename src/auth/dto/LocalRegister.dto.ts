@@ -15,4 +15,10 @@ export class RegisterDto {
 
   @IsNotEmpty()
   readonly age: number;
+
+  readonly photoUrl: string;
+
+  readonly bio: string;
+
+  readonly gender: string;
 }
