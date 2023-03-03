@@ -37,7 +37,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       refreshToken: refreshToken,
     };
 
-    //TODO:Mejorar este metodo
     const user = await this.userService.findOrCreate(newUser);
     const payload = { email: email, sub: user.id };
     const token = this.jwtService.sign(payload);

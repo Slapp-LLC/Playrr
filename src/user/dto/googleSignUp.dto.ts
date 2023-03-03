@@ -4,4 +4,6 @@ export class GoogleSignUpDto {
   readonly photoUrl: string;
   readonly email: string;
   readonly googleId: string;
+  readonly accessToken: string;
+  readonly refreshToken: string;
 }

@@ -23,8 +23,11 @@ export class UserService {
 
   async findById(id: number): Promise<ResponseUserDto | undefined> {
     const user = await this.userRepository.findOne(id);
-    const { password: _, ...result } = user;
-    return result;
+    if (user.password) {
+      const { password: _, ...result } = user;
+      return result;
+    }
+    return user;
   }
 
   async findOrCreate(newUser: GoogleSignUpDto): Promise<any> {
@@ -32,9 +35,31 @@ export class UserService {
     const user = await this.userRepository.findOne({ googleId: googleId });
     if (!user) {
       newUser = this.userRepository.create(newUser);
-      return await this.userRepository.save(newUser);
+      const user = await this.userRepository.save(newUser);
+      const sanitizedUser = {
+        ...user,
+        password: undefined,
+        accessToken: undefined,
+      };
+      return sanitizedUser;
     }
-    return user;
+    user.accessToken = newUser.accessToken;
+    await this.userRepository.save(user);
+    const sanitizedUser = {
+      ...user,
+      password: undefined,
+      accessToken: undefined,
+    };
+    return sanitizedUser;
+  }
+
+  async deleteAccessToken(userId: string) {
+    const user = await this.userRepository.findOne({ id: userId });
+    if (!user) {
+      throw new NotFoundException(`User with ${userId} not found`);
+    }
+    user.accessToken = null;
+    await this.userRepository.save(user);
   }
 
   async createUser(userData: any): Promise<any> {

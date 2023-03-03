@@ -9,6 +9,7 @@ import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import axios from 'axios';
 //TODO: All User Methods move to Users Services
 @Injectable()
 export class AuthService {
@@ -65,6 +66,29 @@ export class AuthService {
       return user;
     } else {
       throw new UnauthorizedException();
+    }
+  }
+
+  //Todo implement function to update accessToken
+  async logOut(user: User): Promise<any> {
+    const accessToken = user.accessToken;
+    if (accessToken) {
+      await this.revokeToken(accessToken);
+      await this.usersService.deleteAccessToken(user.id);
+    }
+  }
+
+  async revokeToken(token: string) {
+    try {
+      await axios({
+        method: 'post',
+        url: 'https://oauth2.googleapis.com/revoke',
+        params: {
+          token: token,
+        },
+      });
+    } catch (error) {
+      console.error(`Error revoking token: ${error.message}`);
     }
   }
 }

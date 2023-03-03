@@ -6,12 +6,15 @@ import {
   UseGuards,
   Request,
   Req,
+  Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/LocalRegister.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
+import axios from 'axios';
+import { Response } from 'express';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -30,11 +33,10 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @Get('google/callback')
   async googleAuthRedirect(@Req() req): Promise<any> {
-    const { access_token, token, user } = req.user;
+    const { token, user } = req.user;
     return {
       token,
       user,
-      access_token,
     };
   }
 
@@ -52,11 +54,10 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('logout')
-  async logout(@Request() req) {
-    console.log(req);
+  async logout(@Request() req, @Res() res: Response): Promise<any> {
+    await this.authService.logOut(req.user);
     req.logout(() => {
-      return 'WOrks';
+      res.status(200).json({ message: 'Logged Out Successfully' });
     });
-    return req.user;
   }
 }
