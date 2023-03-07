@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
-import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
+import axios from 'axios';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -17,7 +17,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       clientID: configService.get('GOOGLE_CLIENT_ID'),
       clientSecret: configService.get('GOOGLE_CLIENT_KEY'),
       callbackURL: 'http://localhost:3000/auth/google/callback',
-      scope: ['profile', 'email'],
+      scope: ['profile', 'email', 'openid'],
     });
   }
   async validate(
@@ -36,10 +36,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       accessToken: accessToken,
       refreshToken: refreshToken,
     };
-
-    const user = await this.userService.findOrCreate(newUser);
+    console.log(accessToken);
+    const user = await this.userService.findOrCreateGoogle(newUser);
+    console.log(user);
     const payload = { email: email, sub: user.id };
     const token = this.jwtService.sign(payload);
-    done(null, { user, accessToken, token, refreshToken });
+    done(null, { user, token });
   }
 }

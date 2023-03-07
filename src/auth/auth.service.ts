@@ -70,25 +70,32 @@ export class AuthService {
   }
 
   //Todo implement function to update accessToken
-  async logOut(user: User): Promise<any> {
-    const accessToken = user.accessToken;
+  async logOut(accessToken: string, id: string): Promise<any> {
     if (accessToken) {
       await this.revokeToken(accessToken);
-      await this.usersService.deleteAccessToken(user.id);
+      await this.usersService.deleteAccessToken(id);
     }
+    return 'works';
   }
 
-  async revokeToken(token: string) {
+  async revokeToken(accessToken: string) {
     try {
       await axios({
         method: 'post',
         url: 'https://oauth2.googleapis.com/revoke',
         params: {
-          token: token,
+          token: accessToken,
         },
       });
     } catch (error) {
       console.error(`Error revoking token: ${error.message}`);
+    }
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (user) {
+      console.log(user);
     }
   }
 }

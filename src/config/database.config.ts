@@ -15,7 +15,7 @@ const databaseConfig = {
   extra: {
     charset: 'utf8mb4_unicode_ci',
   },
-  synchronize: false,
+  synchronize: true,
   migrationsRun: true,
   seeds: [__dirname + '/../database/seeds/**/*{.ts,.js}'],
   factories: [__dirname + '/../database/factories/**/*{.ts,.js}'],

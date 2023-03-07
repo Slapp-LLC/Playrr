@@ -13,7 +13,6 @@ import { RegisterDto } from './dto/LocalRegister.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
-import axios from 'axios';
 import { Response } from 'express';
 @Controller('auth')
 export class AuthController {
@@ -33,10 +32,12 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @Get('google/callback')
   async googleAuthRedirect(@Req() req): Promise<any> {
-    const { token, user } = req.user;
+    const { user, accessToken, token } = req.user;
+    console.log(req.user);
     return {
-      token,
       user,
+      accessToken,
+      token,
     };
   }
 
@@ -54,10 +55,16 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('logout')
-  async logout(@Request() req, @Res() res: Response): Promise<any> {
-    await this.authService.logOut(req.user);
+  async logout(@Request() req, @Res() res: Response): Promise<void> {
+    const { accessToken, id } = req.user;
+    await this.authService.logOut(accessToken, id);
     req.logout(() => {
       res.status(200).json({ message: 'Logged Out Successfully' });
     });
+  }
+
+  @Post('/forgot-password')
+  async forgotPassword(@Body() body: { email: string }) {
+    this.authService.forgotPassword(body.email);
   }
 }
