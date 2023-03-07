@@ -14,10 +14,22 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { Response } from 'express';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiHeader,
+  ApiOAuth2,
+  ApiTags,
+} from '@nestjs/swagger';
+import { ApiLogIn, ApiSignUp } from './documentation/api.decorator';
+import { LoginDto } from './dto/login.dto';
+
+@ApiTags('Authentification')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
+  @ApiSignUp()
+  @ApiBody({ type: RegisterDto })
   @Post('register')
   async create(@Body() user: RegisterDto): Promise<any> {
     const newUser = await this.authService.register(user);
@@ -41,12 +53,17 @@ export class AuthController {
     };
   }
 
+  @ApiLogIn()
+  @ApiBody({
+    type: LoginDto,
+  })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
     return this.authService.login(req.user);
   }
 
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
@@ -65,6 +82,6 @@ export class AuthController {
 
   @Post('/forgot-password')
   async forgotPassword(@Body() body: { email: string }) {
-    this.authService.forgotPassword(body.email);
+    return this.authService.forgotPassword(body.email);
   }
 }

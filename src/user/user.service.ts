@@ -69,7 +69,13 @@ export class UserService {
     user.accessToken = null;
     await this.userRepository.save(user);
   }
-
+  async saveUser(user: User) {
+    try {
+      if (user.id) return await this.userRepository.save(user);
+    } catch (error) {
+      console.log('Error in the database');
+    }
+  }
   async createUser(userData: any): Promise<any> {
     let user = new User();
     user = { ...userData };

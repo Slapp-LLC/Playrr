@@ -12,7 +12,6 @@ async function bootstrap() {
       'This repository contains the API code for a sports app that enables users to create, search and sign up for events. Core features include login/signup, event management, chat, event creation, and sign up.',
     )
     .setVersion('1.0')
-    .addTag('Playrr')
     .build();
   dotenv.config();
   app.use(

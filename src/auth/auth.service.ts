@@ -1,21 +1,25 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterDto } from './dto/LocalRegister.dto';
-import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
+import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { AuthMailerService } from './mailer.service';
 import axios from 'axios';
 //TODO: All User Methods move to Users Services
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UserService,
-    private jwtService: JwtService,
+    private readonly usersService: UserService,
+    private readonly jwtService: JwtService,
+    private readonly mailerService: AuthMailerService,
   ) {}
 
   //TODO add login service after registering
@@ -94,8 +98,21 @@ export class AuthService {
 
   async forgotPassword(email: string) {
     const user = await this.usersService.findByEmail(email);
-    if (user) {
-      console.log(user);
+    if (user && user.password !== null) {
+      const payload = { email: user.email, sub: user.id };
+      const options = { expiresIn: '1h' };
+      const secret = process.env.JWT_SECRET;
+      const token = jwt.sign(payload, secret, options);
+      user.passwordResetToken = token;
+      user.passwordResetExpires = new Date(Date.now() + 3600000);
+      try {
+        await this.usersService.saveUser(user);
+        await this.mailerService.sendPasswordResetEmail(user.email, token);
+        return { message: 'Email sent' };
+      } catch (error) {
+        console.log(error);
+      }
     }
+    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 }
