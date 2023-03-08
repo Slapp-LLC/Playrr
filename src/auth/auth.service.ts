@@ -5,7 +5,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterDto } from './dto/LocalRegister.dto';
 import { UserService } from '../user/user.service';
 import * as jwt from 'jsonwebtoken';
@@ -13,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { AuthMailerService } from './mailer.service';
 import axios from 'axios';
+import { sanitizeUser } from '../auth/utils/sanitizeUser';
 //TODO: All User Methods move to Users Services
 @Injectable()
 export class AuthService {
@@ -33,7 +33,7 @@ export class AuthService {
         const hashedPassword = await bcrypt.hash(userData.password, 10);
         const formatedUser = { ...userData, password: hashedPassword };
         const newUser = await this.usersService.createUser(formatedUser);
-        return newUser;
+        return sanitizeUser(newUser);
       } else {
         throw new Error(`Contraseña sin completar`);
       }
@@ -46,9 +46,10 @@ export class AuthService {
     const payload = { email: user.email, sub: user.id };
     const token = this.jwtService.sign(payload);
     const userData = await this.usersService.findById(payload.sub);
+    const sanitizeData = sanitizeUser(userData);
     return {
-      userData,
-      access_token: token,
+      user: sanitizeData,
+      token: token,
     };
   }
 
@@ -57,11 +58,14 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException('Invalid Credentials');
     }
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      throw new BadRequestException('Invalid Credentials');
+    if (password && user.password) {
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) {
+        throw new BadRequestException('Invalid Credentials');
+      }
+      return user;
     }
-    return user;
+    throw new BadRequestException('Invalid Credentials');
   }
 
   async validateById(id: number): Promise<any> {
@@ -79,7 +83,7 @@ export class AuthService {
       await this.revokeToken(accessToken);
       await this.usersService.deleteAccessToken(id);
     }
-    return 'works';
+    return { message: 'Logged Out Succesfully' };
   }
 
   async revokeToken(accessToken: string) {
@@ -111,8 +115,29 @@ export class AuthService {
         return { message: 'Email sent' };
       } catch (error) {
         console.log(error);
+        throw new HttpException(
+          'User not found',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       }
     }
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+  }
+
+  async resetPassword(token: string, password: string) {
+    const decodedToken: jwt.JwtPayload = jwt.decode(token) as jwt.JwtPayload;
+    const user = await this.usersService.findByEmail(decodedToken.email);
+    if (
+      user.passwordResetToken !== token ||
+      user.passwordResetExpires < new Date()
+    ) {
+      throw new HttpException('Invalid Token', HttpStatus.FORBIDDEN);
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    user.passwordResetToken = null;
+    user.passwordResetExpires = null;
+    await this.usersService.saveUser(user);
+    return { message: 'Password updatedSuccessfuly' };
   }
 }

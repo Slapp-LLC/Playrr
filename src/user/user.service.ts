@@ -1,4 +1,6 @@
 import {
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -73,7 +75,10 @@ export class UserService {
     try {
       if (user.id) return await this.userRepository.save(user);
     } catch (error) {
-      console.log('Error in the database');
+      throw new HttpException(
+        'User not found',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
   async createUser(userData: any): Promise<any> {
