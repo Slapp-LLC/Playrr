@@ -1,9 +1,12 @@
 import {
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserResponse } from 'src/auth/dto/userResponse.dto';
 import { Repository } from 'typeorm';
 import { editProfileDto } from './dto/editProfile.dto';
 import { GoogleSignUpDto } from './dto/googleSignUp.dto';
@@ -30,27 +33,34 @@ export class UserService {
     return user;
   }
 
-  async findOrCreate(newUser: GoogleSignUpDto): Promise<any> {
-    const { googleId } = newUser;
-    const user = await this.userRepository.findOne({ googleId: googleId });
-    if (!user) {
-      newUser = this.userRepository.create(newUser);
-      const user = await this.userRepository.save(newUser);
+  async findOrCreateGoogle(newUser: GoogleSignUpDto): Promise<any> {
+    const { email } = newUser;
+    const existingUser = await this.userRepository.findOne({ email });
+    if (existingUser) {
+      const updatedUser = { ...existingUser, ...newUser };
+      const user = await this.userRepository.save(updatedUser);
+
+      const {
+        password,
+        accessToken,
+        refreshToken,
+        passwordResetToken,
+        passwordResetExpires,
+        ...savedUser
+      } = user;
+
+      return savedUser;
+    } else {
+      const user = this.userRepository.create(newUser);
+      user.accessToken = newUser.accessToken;
+      const savedUser = this.userRepository.save(user);
       const sanitizedUser = {
-        ...user,
+        ...savedUser,
         password: undefined,
         accessToken: undefined,
       };
       return sanitizedUser;
     }
-    user.accessToken = newUser.accessToken;
-    await this.userRepository.save(user);
-    const sanitizedUser = {
-      ...user,
-      password: undefined,
-      accessToken: undefined,
-    };
-    return sanitizedUser;
   }
 
   async deleteAccessToken(userId: string) {
@@ -61,7 +71,16 @@ export class UserService {
     user.accessToken = null;
     await this.userRepository.save(user);
   }
-
+  async saveUser(user: User) {
+    try {
+      if (user.id) return await this.userRepository.save(user);
+    } catch (error) {
+      throw new HttpException(
+        'User not found',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
   async createUser(userData: any): Promise<any> {
     let user = new User();
     user = { ...userData };
@@ -73,6 +92,7 @@ export class UserService {
       throw new Error(`Failed to create user: ${error.message}`);
     }
   }
+
   async editUser(
     userId: number,
     userData: editProfileDto,

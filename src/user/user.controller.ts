@@ -11,15 +11,16 @@ import {
   Request,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { editProfileDto } from './dto/editProfile.dto';
-
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+@ApiTags('User Management')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiOperation({ summary: 'Get the hello message' })
+  @ApiBearerAuth()
   @Put('edit/:id')
   @UseGuards(AuthGuard('jwt'))
   async editProfile(
