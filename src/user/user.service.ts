@@ -63,7 +63,7 @@ export class UserService {
     }
   }
 
-  async deleteAccessToken(userId: string) {
+  async deleteAccessToken(userId: number) {
     const user = await this.userRepository.findOne({ id: userId });
     if (!user) {
       throw new NotFoundException(`User with ${userId} not found`);
