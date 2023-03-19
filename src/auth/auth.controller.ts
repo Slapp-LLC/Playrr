@@ -80,7 +80,7 @@ export class AuthController {
     });
   }
 
-  @Post('/forgot-password')
+  @Post('forgot-password')
   async forgotPassword(@Body() body: { email: string }) {
     return this.authService.forgotPassword(body.email);
   }
@@ -88,5 +88,11 @@ export class AuthController {
   @Post('reset-password')
   async resetPassword(@Body() body: { token: string; password: string }) {
     return this.authService.resetPassword(body.token, body.password);
+  }
+
+  @Post('google/verify')
+  async googleVerifyToken(@Body() { accessToken }: { accessToken: string }) {
+    const user = await this.authService.validateGoogleAccessToken(accessToken);
+    return user;
   }
 }

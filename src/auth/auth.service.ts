@@ -13,14 +13,23 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthMailerService } from './mailer.service';
 import axios from 'axios';
 import { sanitizeUser } from '../auth/utils/sanitizeUser';
+import { OAuth2Client } from 'google-auth-library';
+import { ConfigService } from '@nestjs/config';
 //TODO: All User Methods move to Users Services
 @Injectable()
 export class AuthService {
+  private readonly client: OAuth2Client;
   constructor(
+    private readonly configService: ConfigService,
     private readonly usersService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: AuthMailerService,
-  ) {}
+  ) {
+    this.client = new OAuth2Client({
+      clientId: this.configService.get('GOOGLE_CLIENT_ID'),
+      clientSecret: this.configService.get('GOOGLE_CLIENT_KEY'),
+    });
+  }
 
   //TODO add login service after registering
   async register(userData: RegisterDto): Promise<any> {
@@ -114,7 +123,6 @@ export class AuthService {
         await this.mailerService.sendPasswordResetEmail(user.email, token);
         return { message: 'Email sent' };
       } catch (error) {
-        console.log(error);
         throw new HttpException(
           'User not found',
           HttpStatus.INTERNAL_SERVER_ERROR,
