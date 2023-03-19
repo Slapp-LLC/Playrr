@@ -89,10 +89,4 @@ export class AuthController {
   async resetPassword(@Body() body: { token: string; password: string }) {
     return this.authService.resetPassword(body.token, body.password);
   }
-
-  @Post('google/verify')
-  async googleVerifyToken(@Body() { accessToken }: { accessToken: string }) {
-    const user = await this.authService.validateGoogleAccessToken(accessToken);
-    return user;
-  }
 }
