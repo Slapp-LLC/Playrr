@@ -21,6 +21,7 @@ async function bootstrap() {
       saveUninitialized: false,
     }),
   );
+
   app.use(passport.initialize());
   app.use(passport.session());
   const document = SwaggerModule.createDocument(app, config);

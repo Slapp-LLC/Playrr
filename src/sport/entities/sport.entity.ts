@@ -9,10 +9,10 @@ export class Sport {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   photoUrl: string;
 
-  @Column()
+  @Column({ nullable: true })
   iconUrl: string;
 
   @OneToMany(() => UserSport, (userSport) => userSport.sport)
