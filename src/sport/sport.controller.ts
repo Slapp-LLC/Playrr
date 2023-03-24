@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { SportService } from './sport.service';
 import { CreateSportDto } from './dto/create-sport.dto';
 import { UpdateSportDto } from './dto/update-sport.dto';
@@ -15,6 +23,10 @@ export class SportController {
   @Get()
   findAll() {
     return this.sportService.findAll();
+  }
+  @Get('levels')
+  getAllLevels() {
+    return this.sportService.findAllLevels();
   }
 
   @Get(':id')

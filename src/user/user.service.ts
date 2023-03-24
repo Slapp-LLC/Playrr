@@ -7,17 +7,20 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserResponse } from 'src/auth/dto/userResponse.dto';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { editProfileDto } from './dto/editProfile.dto';
 import { GoogleSignUpDto } from './dto/googleSignUp.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { User } from './entities/user.entity';
-
+import { sanitizeUser } from '../utils/sanitizeUser';
+import { UserSport } from './entities/userSport.entity';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserSport)
+    private readonly userSportRepository: Repository<UserSport>,
   ) {}
 
   async findByEmail(email: string): Promise<User | undefined> {
@@ -63,7 +66,7 @@ export class UserService {
     }
   }
 
-  async deleteAccessToken(userId: string) {
+  async deleteAccessToken(userId: number) {
     const user = await this.userRepository.findOne({ id: userId });
     if (!user) {
       throw new NotFoundException(`User with ${userId} not found`);
@@ -104,16 +107,18 @@ export class UserService {
       );
     }
 
-    const { name, lastName, age } = userData;
+    const { name, lastName, age, gender } = userData;
 
     const updatedUser = {
       ...user,
       name: name ?? user.name,
       lastName: lastName ?? user.lastName,
       age: age ?? user.age,
+      gender: gender ?? user.gender,
     };
 
-    return this.userRepository.save(updatedUser);
+    const rawUserData = await this.userRepository.save(updatedUser);
+    return sanitizeUser(rawUserData);
   }
 
   async deleteUser(userId: number, user: User): Promise<any> {
@@ -127,6 +132,34 @@ export class UserService {
       return;
     } catch (error) {
       throw new Error(`Failed to delete user: ${error.message}`);
+    }
+  }
+
+  async addUserSports(
+    userSports: { sportId: number; levelId: number }[],
+    userId: number,
+  ): Promise<any> {
+    if (userSports.length) {
+      try {
+        for (const { sportId, levelId } of userSports) {
+          const userSport = await this.userSportRepository.findOne({
+            where: { userId, sportId },
+          });
+          if (userSport) {
+            userSport.levelId = levelId;
+            await this.userSportRepository.save(userSport);
+          } else {
+            const newUserSport = new UserSport();
+            newUserSport.userId = userId;
+            newUserSport.sportId = sportId;
+            newUserSport.levelId = levelId;
+            await this.userSportRepository.save(newUserSport);
+          }
+        }
+        return;
+      } catch (error) {
+        throw new Error(`Failed to delete user: ${error.message}`);
+      }
     }
   }
 }

@@ -20,6 +20,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       scope: ['profile', 'email', 'openid'],
     });
   }
+
   async validate(
     accessToken: string,
     refreshToken: string,

@@ -9,6 +9,8 @@ import {
   UseGuards,
   Put,
   Request,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -35,5 +37,19 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   async deleteProfile(@Param('id') userId: number, @Request() req) {
     return this.userService.deleteUser(userId, req.user);
+  }
+
+  @Post('userSport/:id')
+  @UseGuards(AuthGuard('jwt'))
+  async addUserSport(@Body() userSports, @Request() req) {
+    try {
+      await this.userService.addUserSports(userSports, req.user.id);
+      return { message: 'Deporte añadido', status: HttpStatus.CREATED };
+    } catch (error) {
+      throw new HttpException(
+        'Error adding user sport',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

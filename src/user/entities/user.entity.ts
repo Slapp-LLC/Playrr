@@ -1,9 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { UserSport } from './userSport.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column()
   name: string;
@@ -46,4 +47,7 @@ export class User {
 
   @Column({ nullable: true })
   passwordResetExpires: Date;
+
+  @OneToMany(() => UserSport, (userSports) => userSports.user)
+  userSports: UserSport[];
 }
