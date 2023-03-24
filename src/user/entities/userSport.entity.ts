@@ -1,28 +1,28 @@
 import { Sport } from 'src/sport/entities/sport.entity';
 import { SportLevel } from 'src/sport/entities/sportLevel.entity';
-import {
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity()
 export class UserSport {
-  @PrimaryColumn()
-  userId: number;
-
-  @ManyToOne(() => User, (user) => user.userSports)
+  @ManyToOne(() => User, (user) => user.userSports, { primary: true })
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(() => Sport, (sport) => sport.userSports)
+  @ManyToOne(() => Sport, (sport) => sport.userSports, { primary: true })
   @JoinColumn({ name: 'sportId' })
   sport: Sport;
 
   @ManyToOne(() => SportLevel, (sportLevel) => sportLevel.userSports)
   @JoinColumn({ name: 'levelId' })
   level: SportLevel;
+
+  @PrimaryColumn()
+  userId: number;
+
+  @PrimaryColumn()
+  sportId: number;
+
+  @Column()
+  levelId: number;
 }

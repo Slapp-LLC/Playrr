@@ -12,7 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { AuthMailerService } from './mailer.service';
 import axios from 'axios';
-import { sanitizeUser } from '../auth/utils/sanitizeUser';
+import { sanitizeUser } from '../utils/sanitizeUser';
 import { OAuth2Client } from 'google-auth-library';
 import { ConfigService } from '@nestjs/config';
 //TODO: All User Methods move to Users Services

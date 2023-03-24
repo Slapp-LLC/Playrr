@@ -1,5 +1,5 @@
 import { User } from 'src/user/entities/user.entity';
-import { UserResponse } from '../dto/userResponse.dto';
+import { UserResponse } from '../auth/dto/userResponse.dto';
 export function sanitizeUser(user): UserResponse {
   const {
     password,
