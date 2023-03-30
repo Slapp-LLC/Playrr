@@ -11,20 +11,24 @@ import {
   Request,
   HttpException,
   HttpStatus,
+  Catch,
+  UseFilters,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { editProfileDto } from './dto/editProfile.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import UserSportDto from './dto/userSports.dto';
 @ApiTags('User Management')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ApiOperation({ summary: 'Get the hello message' })
+  @ApiOperation({ summary: 'Edit User profile' })
   @ApiBearerAuth()
   @Put('edit/:id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async editProfile(
     @Param('id') userId: number,
     @Body() userData: editProfileDto,
@@ -33,23 +37,21 @@ export class UserController {
     return this.userService.editUser(userId, userData, req.user);
   }
 
+  @ApiOperation({ summary: 'Delete User profile' })
   @Delete('delete/:id')
-  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   async deleteProfile(@Param('id') userId: number, @Request() req) {
     return this.userService.deleteUser(userId, req.user);
   }
 
+  @ApiOperation({ summary: 'Add User Sport' })
   @Post('userSport/:id')
-  @UseGuards(AuthGuard('jwt'))
-  async addUserSport(@Body() userSports, @Request() req) {
-    try {
-      await this.userService.addUserSports(userSports, req.user.id);
-      return { message: 'Deporte añadido', status: HttpStatus.CREATED };
-    } catch (error) {
-      throw new HttpException(
-        'Error adding user sport',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+  @ApiBody({ type: UserSportDto })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async addUserSport(@Body() userSports: UserSportDto[], @Request() req) {
+    console.log(userSports.length);
+    return await this.userService.addUserSports(userSports, req.user.id);
   }
 }

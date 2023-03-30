@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -7,13 +8,16 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserResponse } from 'src/auth/dto/userResponse.dto';
-import { getConnection, Repository } from 'typeorm';
+import { getConnection, getRepository, Repository } from 'typeorm';
 import { editProfileDto } from './dto/editProfile.dto';
 import { GoogleSignUpDto } from './dto/googleSignUp.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { User } from './entities/user.entity';
 import { sanitizeUser } from '../utils/sanitizeUser';
 import { UserSport } from './entities/userSport.entity';
+import UserSportDto from './dto/userSports.dto';
+import { Role } from './entities/role.entity';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -85,9 +89,15 @@ export class UserService {
     }
   }
   async createUser(userData: any): Promise<any> {
+    const roleRepository = getRepository(Role);
     let user = new User();
     user = { ...userData };
     try {
+      const defaultRole = await roleRepository.findOne({ id: 1 });
+      if (!defaultRole) {
+        throw new Error('Default role not found');
+      }
+      user.role = defaultRole;
       const newUser = await this.userRepository.save(user);
       const { password: _, ...result } = newUser;
       return result;
@@ -106,9 +116,7 @@ export class UserService {
         'You are not authorized to edit this profile',
       );
     }
-
     const { name, lastName, age, gender } = userData;
-
     const updatedUser = {
       ...user,
       name: name ?? user.name,
@@ -116,7 +124,6 @@ export class UserService {
       age: age ?? user.age,
       gender: gender ?? user.gender,
     };
-
     const rawUserData = await this.userRepository.save(updatedUser);
     return sanitizeUser(rawUserData);
   }
@@ -136,9 +143,25 @@ export class UserService {
   }
 
   async addUserSports(
-    userSports: { sportId: number; levelId: number }[],
+    userSports: UserSportDto[],
     userId: number,
   ): Promise<any> {
+    if (!userId) {
+      throw new BadRequestException('Invalid userId');
+    }
+    if (
+      !Array.isArray(userSports) ||
+      userSports.some(
+        (sport) =>
+          !sport ||
+          typeof sport !== 'object' ||
+          !sport.sportId ||
+          !sport.levelId,
+      )
+    ) {
+      throw new BadRequestException('Invalid userSports');
+    }
+
     if (userSports.length) {
       try {
         for (const { sportId, levelId } of userSports) {

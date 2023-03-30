@@ -6,6 +6,8 @@ import { typeOrmAsyncConfig } from './config/typeorm.config';
 import { UserModule } from './user/user.module';
 import { SportModule } from './sport/sport.module';
 import { EventModule } from './event/event.module';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './filters/http-exception.filter';
 // import { config } from './config/variables.config';
 @Module({
   imports: [
@@ -19,5 +21,6 @@ import { EventModule } from './event/event.module';
     SportModule,
     EventModule,
   ],
+  providers: [{ provide: APP_FILTER, useClass: HttpExceptionFilter }],
 })
 export class AppModule {}
