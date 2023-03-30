@@ -1,4 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
+import { Role } from './role.entity';
 import { UserSport } from './userSport.entity';
 
 @Entity()
@@ -50,4 +59,8 @@ export class User {
 
   @OneToMany(() => UserSport, (userSports) => userSports.user)
   userSports: UserSport[];
+
+  @ManyToOne(() => Role, (role) => role.user, { eager: true })
+  @JoinColumn({ name: 'role' })
+  role: Role;
 }

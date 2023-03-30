@@ -15,6 +15,11 @@ import axios from 'axios';
 import { sanitizeUser } from '../utils/sanitizeUser';
 import { OAuth2Client } from 'google-auth-library';
 import { ConfigService } from '@nestjs/config';
+import { checkExistingUser } from 'src/utils/user.utils';
+import {
+  createLoginResponse,
+  createUserAndSanitize,
+} from 'src/utils/auth-utils';
 //TODO: All User Methods move to Users Services
 @Injectable()
 export class AuthService {
@@ -31,35 +36,17 @@ export class AuthService {
     });
   }
 
-  //TODO add login service after registering
   async register(userData: RegisterDto): Promise<any> {
-    const user = await this.usersService.findByEmail(userData.email);
-    if (user) {
-      throw new BadRequestException('User with this email already exists');
-    }
     try {
-      if (userData.password) {
-        const hashedPassword = await bcrypt.hash(userData.password, 10);
-        const formatedUser = { ...userData, password: hashedPassword };
-        const newUser = await this.usersService.createUser(formatedUser);
-        return sanitizeUser(newUser);
-      } else {
-        throw new Error(`Contraseña sin completar`);
-      }
+      await checkExistingUser(this.usersService, userData.email);
+      return await createUserAndSanitize(this.usersService, userData);
     } catch (error) {
       throw new Error(`Failed to register user: ${error.message}`);
     }
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user.id };
-    const token = this.jwtService.sign(payload);
-    const userData = await this.usersService.findById(payload.sub);
-    const sanitizeData = sanitizeUser(userData);
-    return {
-      user: sanitizeData,
-      token: token,
-    };
+    return await createLoginResponse(this.jwtService, this.usersService, user);
   }
 
   async validateUser(email: string, password: string): Promise<any> {
