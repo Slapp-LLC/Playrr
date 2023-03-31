@@ -10,7 +10,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { GoogleStrategy } from './strategies/google.strategy';
+// import { GoogleStrategy } from './strategies/google.strategy';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthMailerService } from './mailer.service';
 @Module({
@@ -43,7 +43,7 @@ import { AuthMailerService } from './mailer.service';
   exports: [PassportModule, JwtModule, AuthService],
   providers: [
     AuthService,
-    GoogleStrategy,
+    // GoogleStrategy,
     LocalStrategy,
     JwtStrategy,
     AuthMailerService,

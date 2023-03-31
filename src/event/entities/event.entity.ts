@@ -8,7 +8,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
+import { EventStatus } from 'src/event/enums/EventStatus.enum';
 @Entity()
 export class Event {
   @PrimaryGeneratedColumn()
@@ -18,7 +18,7 @@ export class Event {
   title: string;
 
   @ManyToOne(() => User)
-  hostId: User;
+  host: User;
 
   @Column({ nullable: true })
   gender: string;
@@ -30,13 +30,19 @@ export class Event {
   location: string;
 
   @Column()
-  dateTime: Date;
+  startDate: Date;
+
+  @Column({ nullable: true })
+  endDate: Date;
 
   @Column()
   description: string;
 
   @Column()
-  participantsNumber: number;
+  spots: number;
+
+  @Column({ type: 'enum', enum: EventStatus, default: EventStatus.Scheduled })
+  status: string;
 
   @ManyToOne(() => Sport, (sport) => sport.events)
   @JoinColumn({ name: 'sportId' })

@@ -74,13 +74,13 @@ export class AuthService {
   }
 
   //Todo implement function to update accessToken
-  async logOut(accessToken: string, id: number): Promise<any> {
-    if (accessToken) {
-      await this.revokeToken(accessToken);
-      await this.usersService.deleteAccessToken(id);
-    }
-    return { message: 'Logged Out Succesfully' };
-  }
+  // async logOut(accessToken: string, id: number): Promise<any> {
+  //   if (accessToken) {
+  //     await this.revokeToken(accessToken);
+  //     await this.usersService.deleteAccessToken(id);
+  //   }
+  //   return { message: 'Logged Out Succesfully' };
+  // }
 
   async revokeToken(accessToken: string) {
     try {

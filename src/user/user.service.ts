@@ -25,6 +25,8 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserSport)
     private readonly userSportRepository: Repository<UserSport>,
+    @InjectRepository(Role)
+    private readonly roleRepository: Repository<Role>,
   ) {}
 
   async findByEmail(email: string): Promise<User | undefined> {
@@ -40,44 +42,45 @@ export class UserService {
     return user;
   }
 
-  async findOrCreateGoogle(newUser: GoogleSignUpDto): Promise<any> {
-    const { email } = newUser;
-    const existingUser = await this.userRepository.findOne({ email });
-    if (existingUser) {
-      const updatedUser = { ...existingUser, ...newUser };
-      const user = await this.userRepository.save(updatedUser);
+  // async findOrCreateGoogle(newUser: GoogleSignUpDto): Promise<any> {
+  //   const { email } = newUser;
+  //   const existingUser = await this.userRepository.findOne({ email });
+  //   if (existingUser) {
+  //     const updatedUser = { ...existingUser, ...newUser };
+  //     const user = await this.userRepository.save(updatedUser);
 
-      const {
-        password,
-        accessToken,
-        refreshToken,
-        passwordResetToken,
-        passwordResetExpires,
-        ...savedUser
-      } = user;
+  //     const {
+  //       password,
+  //       accessToken,
+  //       refreshToken,
+  //       passwordResetToken,
+  //       passwordResetExpires,
+  //       ...savedUser
+  //     } = user;
 
-      return savedUser;
-    } else {
-      const user = this.userRepository.create(newUser);
-      user.accessToken = newUser.accessToken;
-      const savedUser = this.userRepository.save(user);
-      const sanitizedUser = {
-        ...savedUser,
-        password: undefined,
-        accessToken: undefined,
-      };
-      return sanitizedUser;
-    }
-  }
+  //     return savedUser;
+  //   } else {
+  //     const user = this.userRepository.create(newUser);
+  //     user.accessToken = newUser.accessToken;
+  //     const savedUser = this.userRepository.save(user);
+  //     const sanitizedUser = {
+  //       ...savedUser,
+  //       password: undefined,
+  //       accessToken: undefined,
+  //     };
+  //     return sanitizedUser;
+  //   }
+  // }
 
-  async deleteAccessToken(userId: number) {
-    const user = await this.userRepository.findOne({ id: userId });
-    if (!user) {
-      throw new NotFoundException(`User with ${userId} not found`);
-    }
-    user.accessToken = null;
-    await this.userRepository.save(user);
-  }
+  // async deleteAccessToken(userId: number) {
+  //   const user = await this.userRepository.findOne({ id: userId });
+  //   if (!user) {
+  //     throw new NotFoundException(`User with ${userId} not found`);
+  //   }
+  //   user.accessToken = null;
+  //   await this.userRepository.save(user);
+  // }
+
   async saveUser(user: User) {
     try {
       if (user.id) return await this.userRepository.save(user);
@@ -88,12 +91,12 @@ export class UserService {
       );
     }
   }
+
   async createUser(userData: any): Promise<any> {
-    const roleRepository = getRepository(Role);
     let user = new User();
     user = { ...userData };
     try {
-      const defaultRole = await roleRepository.findOne({ id: 1 });
+      const defaultRole = await this.roleRepository.findOne({ id: 1 });
       if (!defaultRole) {
         throw new Error('Default role not found');
       }
