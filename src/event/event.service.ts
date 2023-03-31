@@ -7,6 +7,7 @@ import { User } from 'src/user/entities/user.entity';
 import { Sport } from 'src/sport/entities/sport.entity';
 import { SportLevel } from 'src/sport/entities/sportLevel.entity';
 import { Event } from './entities/event.entity';
+import { EventStatus } from './enums/EventStatus.enum';
 @Injectable()
 export class EventService {
   constructor(
@@ -67,16 +68,24 @@ export class EventService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} event`;
-  }
-
-  update(id: number, updateEventDto: UpdateEventDto) {
-    return `This action updates a #${id} event`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} event`;
+  async updateEventStatus(
+    id: number,
+    userId: number,
+    newStatus: EventStatus,
+  ): Promise<any> {
+    const event = await this.eventRepository.findOne(id, {
+      relations: ['host'],
+    });
+    if (!event) {
+      throw new HttpException('Not found resource', HttpStatus.NOT_FOUND);
+    }
+    if (event.host.id === userId) {
+      event.status = newStatus;
+      const updatedEvent = await this.eventRepository.save(event);
+      return updatedEvent;
+    } else {
+      throw new HttpException('Forbidden resource', HttpStatus.FORBIDDEN);
+    }
   }
 }
 //TODO Implement create event service

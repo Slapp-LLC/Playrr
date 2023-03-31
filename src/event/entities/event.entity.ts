@@ -3,6 +3,7 @@ import { SportLevel } from 'src/sport/entities/sportLevel.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -28,6 +29,9 @@ export class Event {
 
   @Column()
   location: string;
+
+  @CreateDateColumn({ nullable: true })
+  creationDate: Date;
 
   @Column()
   startDate: Date;

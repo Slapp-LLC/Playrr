@@ -3,5 +3,5 @@ export enum EventStatus {
   InProgress = 'in_progress',
   Completed = 'completed',
   Cancelled = 'cancelled',
-  Delayed = 'delayed',
+  Postponed = 'postponed',
 }
