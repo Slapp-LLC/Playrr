@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Role } from './role.entity';
 import { UserSport } from './userSport.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -22,16 +23,16 @@ export class User {
   lastName: string;
 
   @Column({ unique: true })
+  @Exclude()
   email: string;
 
   @Column({ nullable: true })
+  @Exclude()
   password: string;
 
   @Column({ nullable: true })
+  @Exclude()
   age: number;
-
-  @Column({ nullable: true })
-  googleId: string;
 
   @Column({ nullable: true })
   photoUrl: string;
@@ -40,21 +41,18 @@ export class User {
   bio: string;
 
   @Column({ nullable: true })
+  @Exclude()
   gender: string;
 
   @Column({ nullable: true })
   country: string;
 
   @Column({ nullable: true })
-  accessToken: string;
-
-  @Column({ nullable: true })
-  refreshToken: string;
-
-  @Column({ nullable: true })
+  @Exclude()
   passwordResetToken: string;
 
   @Column({ nullable: true })
+  @Exclude()
   passwordResetExpires: Date;
 
   @OneToMany(() => UserSport, (userSports) => userSports.user)

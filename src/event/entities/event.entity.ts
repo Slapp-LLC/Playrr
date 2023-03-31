@@ -3,12 +3,13 @@ import { SportLevel } from 'src/sport/entities/sportLevel.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
+import { EventStatus } from 'src/event/enums/EventStatus.enum';
 @Entity()
 export class Event {
   @PrimaryGeneratedColumn()
@@ -18,7 +19,7 @@ export class Event {
   title: string;
 
   @ManyToOne(() => User)
-  hostId: User;
+  host: User;
 
   @Column({ nullable: true })
   gender: string;
@@ -29,14 +30,23 @@ export class Event {
   @Column()
   location: string;
 
+  @CreateDateColumn({ nullable: true })
+  creationDate: Date;
+
   @Column()
-  dateTime: Date;
+  startDate: Date;
+
+  @Column({ nullable: true })
+  endDate: Date;
 
   @Column()
   description: string;
 
   @Column()
-  participantsNumber: number;
+  spots: number;
+
+  @Column({ type: 'enum', enum: EventStatus, default: EventStatus.Scheduled })
+  status: string;
 
   @ManyToOne(() => Sport, (sport) => sport.events)
   @JoinColumn({ name: 'sportId' })

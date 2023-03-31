@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import { getRepository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { Sport } from 'src/sport/entities/sport.entity';
 import { SportLevel } from 'src/sport/entities/sportLevel.entity';
 import { Event } from './entities/event.entity';
+import { EventStatus } from './enums/EventStatus.enum';
 @Injectable()
 export class EventService {
   constructor(
@@ -33,32 +33,59 @@ export class EventService {
     }
     const event = new Event();
     event.title = eventDto.title;
-    event.hostId = host;
+    event.host = host;
     event.gender = eventDto.gender;
     event.price = eventDto.price;
     event.location = eventDto.location;
-    event.dateTime = eventDto.dateTime;
+    event.startDate = eventDto.startDate;
+    event.endDate = eventDto.endDate;
     event.description = eventDto.description;
-    event.participantsNumber = eventDto.participantsNumber;
+    event.spots = eventDto.spots;
     event.sport = sport;
     event.level = level;
     return this.eventRepository.save(event);
   }
 
-  findAll() {
-    return `This action returns all event`;
+  async getAllEvents(): Promise<any> {
+    const sports = await this.eventRepository.find({
+      relations: ['host', 'sport', 'level'],
+    });
+    return sports;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} event`;
+  async deleteEvent(id: number, userId: number): Promise<any> {
+    const event = await this.eventRepository.findOne(id, {
+      relations: ['host'],
+    });
+    if (event.host.id === userId) {
+      await this.eventRepository.delete(id);
+      return {
+        status: HttpStatus.NO_CONTENT, // or HttpStatus.OK if you want to return 200
+        message: 'Event deleted successfully',
+      };
+    } else {
+      throw new HttpException('Forbidden resource', HttpStatus.FORBIDDEN);
+    }
   }
 
-  update(id: number, updateEventDto: UpdateEventDto) {
-    return `This action updates a #${id} event`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} event`;
+  async updateEventStatus(
+    id: number,
+    userId: number,
+    newStatus: EventStatus,
+  ): Promise<any> {
+    const event = await this.eventRepository.findOne(id, {
+      relations: ['host'],
+    });
+    if (!event) {
+      throw new HttpException('Not found resource', HttpStatus.NOT_FOUND);
+    }
+    if (event.host.id === userId) {
+      event.status = newStatus;
+      const updatedEvent = await this.eventRepository.save(event);
+      return updatedEvent;
+    } else {
+      throw new HttpException('Forbidden resource', HttpStatus.FORBIDDEN);
+    }
   }
 }
 //TODO Implement create event service

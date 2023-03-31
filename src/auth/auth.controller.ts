@@ -38,21 +38,21 @@ export class AuthController {
     return await this.authService.login(newUser);
   }
 
-  @UseGuards(GoogleAuthGuard)
-  @Get('google')
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async googleAuth(): Promise<void> {}
+  // @UseGuards(GoogleAuthGuard)
+  // @Get('google')
+  // // eslint-disable-next-line @typescript-eslint/no-empty-function
+  // async googleAuth(): Promise<void> {}
 
-  @UseGuards(GoogleAuthGuard)
-  @Get('google/callback')
-  async googleAuthRedirect(@Req() req): Promise<any> {
-    const { user, accessToken, token } = req.user;
-    return {
-      user,
-      accessToken,
-      token,
-    };
-  }
+  // @UseGuards(GoogleAuthGuard)
+  // @Get('google/callback')
+  // async googleAuthRedirect(@Req() req): Promise<any> {
+  //   const { user, accessToken, token } = req.user;
+  //   return {
+  //     user,
+  //     accessToken,
+  //     token,
+  //   };
+  // }
 
   @ApiLogIn()
   @ApiBody({
@@ -71,15 +71,15 @@ export class AuthController {
     return req.user;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('logout')
-  async logout(@Request() req, @Res() res: Response): Promise<void> {
-    const { accessToken, id } = req.user;
-    await this.authService.logOut(accessToken, id);
-    req.logout(() => {
-      res.status(200).json({ message: 'Logged Out Successfully' });
-    });
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Get('logout')
+  // async logout(@Request() req, @Res() res: Response): Promise<void> {
+  //   const { accessToken, id } = req.user;
+  //   await this.authService.logOut(accessToken, id);
+  //   req.logout(() => {
+  //     res.status(200).json({ message: 'Logged Out Successfully' });
+  //   });
+  // }
 
   @Post('forgot-password')
   async forgotPassword(@Body() body: { email: string }) {
