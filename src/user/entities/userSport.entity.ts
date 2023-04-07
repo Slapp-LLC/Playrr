@@ -5,15 +5,22 @@ import { User } from './user.entity';
 
 @Entity()
 export class UserSport {
-  @ManyToOne(() => User, (user) => user.userSports, { primary: true })
+  @ManyToOne(() => User, (user) => user.userSports, {
+    primary: true,
+  })
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(() => Sport, (sport) => sport.userSports, { primary: true })
+  @ManyToOne(() => Sport, (sport) => sport.userSports, {
+    primary: true,
+    eager: true,
+  })
   @JoinColumn({ name: 'sportId' })
   sport: Sport;
 
-  @ManyToOne(() => SportLevel, (sportLevel) => sportLevel.userSports)
+  @ManyToOne(() => SportLevel, (sportLevel) => sportLevel.userSports, {
+    eager: true,
+  })
   @JoinColumn({ name: 'levelId' })
   level: SportLevel;
 

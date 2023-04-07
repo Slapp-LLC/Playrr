@@ -7,9 +7,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EventStatus } from 'src/event/enums/EventStatus.enum';
+import { UserEvent } from 'src/user-event/entities/user-event.entity';
 @Entity()
 export class Event {
   @PrimaryGeneratedColumn()
@@ -42,6 +44,9 @@ export class Event {
   @Column()
   description: string;
 
+  @Column({ nullable: true })
+  eventPhoto: string;
+
   @Column()
   spots: number;
 
@@ -51,6 +56,9 @@ export class Event {
   @ManyToOne(() => Sport, (sport) => sport.events)
   @JoinColumn({ name: 'sportId' })
   sport: Sport;
+
+  @OneToMany(() => UserEvent, (userEvent) => userEvent.event)
+  players: UserEvent[];
 
   @ManyToOne(() => SportLevel, (level) => level.events)
   @JoinColumn({ name: 'levelId' })

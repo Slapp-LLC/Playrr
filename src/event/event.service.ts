@@ -53,6 +53,22 @@ export class EventService {
     return sports;
   }
 
+  async getFilteredEvents(sportId?: number, sportLevel?: number): Promise<any> {
+    const query = this.eventRepository
+      .createQueryBuilder('event')
+      .leftJoinAndSelect('event.host', 'host')
+      .leftJoinAndSelect('event.sport', 'sport')
+      .leftJoinAndSelect('event.level', 'level');
+    if (sportId) {
+      query.andWhere('event.sportId = :sportId', { sportId });
+    }
+    if (sportLevel) {
+      query.andWhere('event.levelId = :sportLevel', { sportLevel });
+    }
+    const events = await query.getMany();
+    return events;
+  }
+
   async deleteEvent(id: number, userId: number): Promise<any> {
     const event = await this.eventRepository.findOne(id, {
       relations: ['host'],

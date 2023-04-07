@@ -10,6 +10,7 @@ import {
 import { Role } from './role.entity';
 import { UserSport } from './userSport.entity';
 import { Exclude } from 'class-transformer';
+import { UserEvent } from 'src/user-event/entities/user-event.entity';
 
 @Entity()
 export class User {
@@ -56,7 +57,12 @@ export class User {
   passwordResetExpires: Date;
 
   @OneToMany(() => UserSport, (userSports) => userSports.user)
+  @JoinColumn({ name: 'sports' })
   userSports: UserSport[];
+
+  @OneToMany(() => UserEvent, (userEvent) => userEvent.user)
+  @JoinColumn({ name: 'matches' })
+  matches: UserEvent[];
 
   @ManyToOne(() => Role, (role) => role.user, { eager: true })
   @JoinColumn({ name: 'role' })

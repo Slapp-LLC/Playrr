@@ -34,7 +34,10 @@ export class UserService {
   }
 
   async findById(id: number): Promise<ResponseUserDto | undefined> {
-    const user = await this.userRepository.findOne(id);
+    const user = await this.userRepository.findOne(id, {
+      relations: ['userSports', 'matches'],
+    });
+    console.log(user);
     if (user.password) {
       const { password: _, ...result } = user;
       return result;
