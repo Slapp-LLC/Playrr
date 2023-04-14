@@ -28,7 +28,6 @@ export async function getUserData(
   userId: string,
 ): Promise<any> {
   const userData = await usersService.findById(parseInt(userId));
-  console.log(userData);
   return userData;
 }
 

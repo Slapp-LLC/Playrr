@@ -11,7 +11,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EventStatus } from 'src/event/enums/EventStatus.enum';
-import { UserEvent } from 'src/user-event/entities/user-event.entity';
+import { Ticket } from 'src/tickets/entities/ticket.entity';
 @Entity()
 export class Event {
   @PrimaryGeneratedColumn()
@@ -57,8 +57,8 @@ export class Event {
   @JoinColumn({ name: 'sportId' })
   sport: Sport;
 
-  @OneToMany(() => UserEvent, (userEvent) => userEvent.event)
-  players: UserEvent[];
+  @OneToMany(() => Ticket, (ticket) => ticket.event)
+  players: Ticket[];
 
   @ManyToOne(() => SportLevel, (level) => level.events)
   @JoinColumn({ name: 'levelId' })

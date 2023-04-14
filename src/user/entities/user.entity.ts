@@ -3,14 +3,13 @@ import {
   Column,
   PrimaryGeneratedColumn,
   OneToMany,
-  OneToOne,
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
 import { Role } from './role.entity';
 import { UserSport } from './userSport.entity';
 import { Exclude } from 'class-transformer';
-import { UserEvent } from 'src/user-event/entities/user-event.entity';
+import { Ticket } from 'src/tickets/entities/ticket.entity';
 
 @Entity()
 export class User {
@@ -60,9 +59,9 @@ export class User {
   @JoinColumn({ name: 'sports' })
   userSports: UserSport[];
 
-  @OneToMany(() => UserEvent, (userEvent) => userEvent.user)
+  @OneToMany(() => Ticket, (ticket) => ticket.user)
   @JoinColumn({ name: 'matches' })
-  matches: UserEvent[];
+  matches: Ticket[];
 
   @ManyToOne(() => Role, (role) => role.user, { eager: true })
   @JoinColumn({ name: 'role' })

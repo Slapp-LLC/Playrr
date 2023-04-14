@@ -11,7 +11,7 @@ import {
 import { UserEventStatus } from '../enum/user-event-status.enum';
 
 @Entity()
-export class UserEvent {
+export class Ticket {
   @PrimaryGeneratedColumn()
   id: number;
   @ManyToOne(() => User, (user) => user.matches)

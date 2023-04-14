@@ -46,6 +46,15 @@ export class EventService {
     return this.eventRepository.save(event);
   }
 
+  async getAnEvent(id: number): Promise<any> {
+    if (id) {
+      const event = await this.eventRepository.findOne(id);
+      return event;
+    } else {
+      throw new HttpException('Not found', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async getAllEvents(): Promise<any> {
     const sports = await this.eventRepository.find({
       relations: ['host', 'sport', 'level'],

@@ -37,7 +37,6 @@ export class UserService {
     const user = await this.userRepository.findOne(id, {
       relations: ['userSports', 'matches'],
     });
-    console.log(user);
     if (user.password) {
       const { password: _, ...result } = user;
       return result;
