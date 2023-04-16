@@ -15,11 +15,11 @@ export class Ticket {
   @PrimaryGeneratedColumn()
   id: number;
   @ManyToOne(() => User, (user) => user.matches)
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @ManyToOne(() => Event, (event) => event.players)
-  @JoinColumn({ name: 'eventId' })
+  @JoinColumn({ name: 'event_id' })
   event: Event;
 
   @CreateDateColumn()

@@ -54,13 +54,13 @@ export class Event {
   status: string;
 
   @ManyToOne(() => Sport, (sport) => sport.events)
-  @JoinColumn({ name: 'sportId' })
+  @JoinColumn({ name: 'sport_id' })
   sport: Sport;
 
   @OneToMany(() => Ticket, (ticket) => ticket.event)
   players: Ticket[];
 
   @ManyToOne(() => SportLevel, (level) => level.events)
-  @JoinColumn({ name: 'levelId' })
+  @JoinColumn({ name: 'level_id' })
   level: SportLevel;
 }

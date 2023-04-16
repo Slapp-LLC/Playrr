@@ -7,10 +7,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserResponse } from 'src/auth/dto/userResponse.dto';
-import { getConnection, getRepository, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { editProfileDto } from './dto/editProfile.dto';
-import { GoogleSignUpDto } from './dto/googleSignUp.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { User } from './entities/user.entity';
 import { sanitizeUser } from '../utils/sanitizeUser';

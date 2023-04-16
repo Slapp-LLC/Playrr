@@ -35,6 +35,7 @@ export class EventController {
   getAllEvents() {
     return this.eventService.getAllEvents();
   }
+
   @Get(':id')
   @UseInterceptors(ClassSerializerInterceptor)
   getAnEvent(@Param('id') id: string) {
