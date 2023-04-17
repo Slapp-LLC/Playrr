@@ -59,7 +59,7 @@ export class EventService {
 
   async getAllEvents(): Promise<any> {
     const sports = await this.eventRepository.find({
-      relations: ['host', 'sport', 'level'],
+      relations: ['host', 'sport', 'level', 'players'],
     });
     return sports;
   }

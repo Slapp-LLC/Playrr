@@ -58,6 +58,7 @@ export class Event {
   sport: Sport;
 
   @OneToMany(() => Ticket, (ticket) => ticket.event)
+  @JoinColumn({ name: 'players' })
   players: Ticket[];
 
   @ManyToOne(() => SportLevel, (level) => level.events)
