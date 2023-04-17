@@ -1,35 +1,44 @@
-import { Sport } from 'src/sport/entities/sport.entity';
-import { SportLevel } from 'src/sport/entities/sportLevel.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  PrimaryColumn,
+  JoinColumn,
+} from 'typeorm';
 import { User } from './user.entity';
+import { Sport } from '../../sport/entities/sport.entity';
+import { SportLevel } from '../../sport/entities/sportLevel.entity';
 
 @Entity()
 export class UserSport {
-  @ManyToOne(() => User, (user) => user.userSports, {
-    primary: true,
-  })
-  @JoinColumn({ name: 'userId' })
+  @ManyToOne(() => User, (user) => user.userSports, { primary: true })
+  @JoinColumn({ name: 'user' })
   user: User;
 
   @ManyToOne(() => Sport, (sport) => sport.userSports, {
     primary: true,
     eager: true,
   })
-  @JoinColumn({ name: 'sportId' })
+  @JoinColumn({ name: 'sport' })
   sport: Sport;
 
   @ManyToOne(() => SportLevel, (sportLevel) => sportLevel.userSports, {
     eager: true,
   })
-  @JoinColumn({ name: 'levelId' })
+  @JoinColumn({ name: 'level' })
   level: SportLevel;
 
-  @PrimaryColumn()
-  userId: number;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
 
-  @PrimaryColumn()
-  sportId: number;
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
+  updated_at: Date;
 
-  @Column()
-  levelId: number;
+  @Column({ type: 'timestamp', nullable: true })
+  deleted_at: Date;
 }

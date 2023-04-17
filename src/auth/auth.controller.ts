@@ -34,6 +34,7 @@ export class AuthController {
   @ApiBody({ type: RegisterDto })
   @Post('register')
   async create(@Body() user: RegisterDto): Promise<any> {
+    console.log(user);
     const newUser = await this.authService.register(user);
     return await this.authService.login(newUser);
   }

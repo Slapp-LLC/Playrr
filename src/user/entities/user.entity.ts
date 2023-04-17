@@ -7,9 +7,10 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { Role } from './role.entity';
-import { UserSport } from './userSport.entity';
+
 import { Exclude } from 'class-transformer';
-import { Ticket } from 'src/tickets/entities/ticket.entity';
+import { Ticket } from '../../tickets/entities/ticket.entity';
+import { UserSport } from './userSport.entity';
 
 @Entity()
 export class User {

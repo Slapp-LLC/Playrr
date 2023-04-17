@@ -1,6 +1,6 @@
-import { Sport } from 'src/sport/entities/sport.entity';
-import { SportLevel } from 'src/sport/entities/sportLevel.entity';
-import { User } from 'src/user/entities/user.entity';
+import { Sport } from '../../sport/entities/sport.entity';
+import { SportLevel } from '../../sport/entities/sportLevel.entity';
+import { User } from '../../user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -10,8 +10,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { EventStatus } from 'src/event/enums/EventStatus.enum';
-import { Ticket } from 'src/tickets/entities/ticket.entity';
+import { EventStatus } from '../enums/EventStatus.enum';
+import { Ticket } from '../../tickets/entities/ticket.entity';
 @Entity()
 export class Event {
   @PrimaryGeneratedColumn()

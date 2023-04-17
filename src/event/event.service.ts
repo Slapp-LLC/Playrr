@@ -24,8 +24,8 @@ export class EventService {
   //Create event method
   async createEvent(eventDto: CreateEventDto): Promise<Event> {
     const host = await this.userReposity.findOne(eventDto.hostId);
-    const sport = await this.sportRepository.findOne(eventDto.sportId);
-    const level = await this.sportLevelRepository.findOne(eventDto.levelId);
+    const sport = await this.sportRepository.findOne(eventDto.sport_id);
+    const level = await this.sportLevelRepository.findOne(eventDto.level_id);
     if (!host || !sport || !level) {
       throw new Error(
         'Failed to create event: One or more related entities not found',

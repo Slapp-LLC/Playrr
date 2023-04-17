@@ -51,6 +51,7 @@ export class TicketsService {
         );
       }
 
+      //Todo Fix this!
       // Create a new ticket
       const newTicket = new Ticket();
       newTicket.user = { id: userId } as User;

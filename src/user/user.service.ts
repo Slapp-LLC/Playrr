@@ -15,6 +15,8 @@ import { sanitizeUser } from '../utils/sanitizeUser';
 import { UserSport } from './entities/userSport.entity';
 import UserSportDto from './dto/userSports.dto';
 import { Role } from './entities/role.entity';
+import { SportLevel } from '../sport/entities/sportLevel.entity';
+import { Sport } from '../sport/entities/sport.entity';
 
 @Injectable()
 export class UserService {
@@ -25,6 +27,10 @@ export class UserService {
     private readonly userSportRepository: Repository<UserSport>,
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
+    @InjectRepository(SportLevel)
+    private readonly sportLevelRepository: Repository<SportLevel>,
+    @InjectRepository(Sport)
+    private readonly sportRepository: Repository<Sport>,
   ) {}
 
   async findByEmail(email: string): Promise<User | undefined> {
@@ -32,14 +38,15 @@ export class UserService {
   }
 
   async findById(id: number): Promise<ResponseUserDto | undefined> {
-    const user = await this.userRepository.findOne(id, {
-      relations: ['userSports', 'matches'],
-    });
-    if (user.password) {
-      const { password: _, ...result } = user;
-      return result;
+    try {
+      const user = await this.userRepository.findOne(id, {
+        relations: ['userSports', 'matches'],
+      });
+      return user;
+    } catch (error) {
+      console.log(error);
+      throw error(error);
     }
-    return user;
   }
 
   // async findOrCreateGoogle(newUser: GoogleSignUpDto): Promise<any> {
@@ -158,8 +165,8 @@ export class UserService {
         (sport) =>
           !sport ||
           typeof sport !== 'object' ||
-          !sport.sportId ||
-          !sport.levelId,
+          !sport.sport_id ||
+          !sport.level_id,
       )
     ) {
       throw new BadRequestException('Invalid userSports');
@@ -167,19 +174,22 @@ export class UserService {
 
     if (userSports.length) {
       try {
-        for (const { sportId, levelId } of userSports) {
+        for (const { sport_id, level_id } of userSports) {
           const userSport = await this.userSportRepository.findOne({
-            where: { userId, sportId },
+            where: { user: userId },
           });
+          const user = await this.userRepository.findOne(userId);
+          const sport = await this.sportRepository.findOne(sport_id);
+          const level = await this.sportLevelRepository.findOne(level_id);
           if (userSport) {
-            userSport.levelId = levelId;
-            await this.userSportRepository.save(userSport);
+            userSport.level = level;
+            return await this.userSportRepository.save(userSport);
           } else {
             const newUserSport = new UserSport();
-            newUserSport.userId = userId;
-            newUserSport.sportId = sportId;
-            newUserSport.levelId = levelId;
-            await this.userSportRepository.save(newUserSport);
+            newUserSport.sport = sport;
+            newUserSport.user = user;
+            newUserSport.level = level;
+            return await this.userSportRepository.save(newUserSport);
           }
         }
         return;
