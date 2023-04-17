@@ -49,7 +49,7 @@ export class EventService {
   async getAnEvent(id: number): Promise<any> {
     if (id) {
       const event = await this.eventRepository.findOne(id, {
-        relations: ['host', 'level', 'sport'],
+        relations: ['host', 'level', 'sport', 'players'],
       });
       return event;
     } else {
