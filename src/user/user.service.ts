@@ -9,7 +9,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { editProfileDto } from './dto/editProfile.dto';
-import { ResponseUserDto } from './dto/response-user.dto';
 import { User } from './entities/user.entity';
 import { sanitizeUser } from '../utils/sanitizeUser';
 import { UserSport } from './entities/userSport.entity';
@@ -17,6 +16,7 @@ import UserSportDto from './dto/userSports.dto';
 import { Role } from './entities/role.entity';
 import { SportLevel } from '../sport/entities/sportLevel.entity';
 import { Sport } from '../sport/entities/sport.entity';
+import { UserResponse } from 'src/auth/dto/userResponse.dto';
 
 @Injectable()
 export class UserService {
@@ -37,7 +37,7 @@ export class UserService {
     return this.userRepository.findOne({ email });
   }
 
-  async findById(id: number): Promise<ResponseUserDto | undefined> {
+  async findById(id: number): Promise<any> {
     try {
       const user = await this.userRepository.findOne(id, {
         relations: ['userSports', 'matches'],

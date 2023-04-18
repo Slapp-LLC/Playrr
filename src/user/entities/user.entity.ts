@@ -23,16 +23,15 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column({ unique: true })
   @Exclude()
+  @Column({ unique: true })
   email: string;
 
-  @Column({ nullable: true })
   @Exclude()
+  @Column({ nullable: true })
   password: string;
 
   @Column({ nullable: true })
-  @Exclude()
   age: number;
 
   @Column({ nullable: true })
@@ -41,19 +40,19 @@ export class User {
   @Column({ type: 'text', nullable: true })
   bio: string;
 
-  @Column({ nullable: true })
   @Exclude()
+  @Column({ nullable: true })
   gender: string;
 
   @Column({ nullable: true })
   country: string;
 
-  @Column({ nullable: true })
   @Exclude()
+  @Column({ nullable: true })
   passwordResetToken: string;
 
-  @Column({ nullable: true })
   @Exclude()
+  @Column({ nullable: true })
   passwordResetExpires: Date;
 
   @OneToMany(() => UserSport, (userSports) => userSports.user)

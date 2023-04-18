@@ -13,6 +13,8 @@ import {
   HttpStatus,
   Catch,
   UseFilters,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,6 +22,8 @@ import { editProfileDto } from './dto/editProfile.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import UserSportDto from './dto/userSports.dto';
+import { UserResponse } from 'src/auth/dto/userResponse.dto';
+import { classToClassFromExist } from 'class-transformer';
 @ApiTags('User Management')
 @Controller('user')
 export class UserController {
@@ -53,5 +57,15 @@ export class UserController {
   async addUserSport(@Body() userSports: UserSportDto[], @Request() req) {
     console.log(req.user.id);
     return await this.userService.addUserSports(userSports, req.user.id);
+  }
+
+  @ApiOperation({ summary: 'Get user data' })
+  @Get(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getUserData(@Param('id') id: string): Promise<any> {
+    const user = await this.userService.findById(+id);
+    return user;
   }
 }
