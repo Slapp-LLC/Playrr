@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -16,5 +23,12 @@ export class TicketController {
       ticketData.userId,
       ticketData.eventId,
     );
+  }
+
+  @ApiOperation({ summary: 'Get my matches' })
+  @UseGuards(JwtAuthGuard)
+  @Get('myMatches')
+  async getMyMatches(@Request() req) {
+    return this.ticketService.getMyTickets(req.user.id);
   }
 }

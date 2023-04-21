@@ -18,6 +18,13 @@ export class TicketsService {
     private readonly connection: Connection,
   ) {}
 
+  async getMyTickets(userId: number) {
+    const events = await this.ticketRepository.find({
+      where: { user: userId },
+    });
+    return events;
+  }
+
   async createTicket(userId: number, eventId: number) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();

@@ -1,6 +1,6 @@
 class UserSportDto {
-  level_id: number;
-  sport_id: number;
+  levelId: number;
+  sportId: number;
 }
 
 export default UserSportDto;

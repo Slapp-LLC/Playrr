@@ -41,6 +41,12 @@ export class UserController {
     return this.userService.editUser(userId, userData, req.user);
   }
 
+  @Get('/myProfile')
+  @UseGuards(JwtAuthGuard)
+  async getMyData(@Request() req) {
+    return req.user;
+  }
+
   @ApiOperation({ summary: 'Delete User profile' })
   @Delete('delete/:id')
   @ApiBearerAuth()
@@ -54,9 +60,9 @@ export class UserController {
   @ApiBody({ type: UserSportDto })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  async addUserSport(@Body() userSports: UserSportDto[], @Request() req) {
-    console.log(req.user.id);
-    return await this.userService.addUserSports(userSports, req.user.id);
+  async addUserSport(@Body() userSport: UserSportDto, @Request() req) {
+    console.log(userSport, req.user.id);
+    return await this.userService.addUserSports(userSport, req.user.id);
   }
 
   @ApiOperation({ summary: 'Get user data' })

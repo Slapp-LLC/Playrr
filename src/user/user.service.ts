@@ -153,49 +153,35 @@ export class UserService {
   }
 
   async addUserSports(
-    userSports: UserSportDto[],
+    body: { sportId: number; levelId: number },
     userId: number,
   ): Promise<any> {
     if (!userId) {
       throw new BadRequestException('Invalid userId');
     }
-    if (
-      !Array.isArray(userSports) ||
-      userSports.some(
-        (sport) =>
-          !sport ||
-          typeof sport !== 'object' ||
-          !sport.sport_id ||
-          !sport.level_id,
-      )
-    ) {
-      throw new BadRequestException('Invalid userSports');
-    }
 
-    if (userSports.length) {
-      try {
-        for (const { sport_id, level_id } of userSports) {
-          const userSport = await this.userSportRepository.findOne({
-            where: { user: userId },
-          });
-          const user = await this.userRepository.findOne(userId);
-          const sport = await this.sportRepository.findOne(sport_id);
-          const level = await this.sportLevelRepository.findOne(level_id);
-          if (userSport) {
-            userSport.level = level;
-            return await this.userSportRepository.save(userSport);
-          } else {
-            const newUserSport = new UserSport();
-            newUserSport.sport = sport;
-            newUserSport.user = user;
-            newUserSport.level = level;
-            return await this.userSportRepository.save(newUserSport);
-          }
-        }
-        return;
-      } catch (error) {
-        throw new Error(`Failed to delete user: ${error.message}`);
+    try {
+      const userSport = await this.userSportRepository.findOne({
+        where: { user: userId },
+      });
+      const user = await this.userRepository.findOne(userId);
+      const sport = await this.sportRepository.findOne(body.sportId);
+      const level = await this.sportLevelRepository.findOne(body.levelId);
+
+      if (userSport) {
+        userSport.level = level;
+        userSport.user = user;
+        userSport.sport = sport;
+        return await this.userSportRepository.save(userSport);
+      } else {
+        const newUserSport = new UserSport();
+        newUserSport.sport = sport;
+        newUserSport.user = user;
+        newUserSport.level = level;
+        return await this.userSportRepository.save(newUserSport);
       }
+    } catch (error) {
+      throw new Error(`Failed to delete user: ${error.message}`);
     }
   }
 }
