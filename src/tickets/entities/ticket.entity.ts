@@ -18,7 +18,7 @@ export class Ticket {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Event, (event) => event.players)
+  @ManyToOne(() => Event, (event) => event.players, { eager: true })
   @JoinColumn({ name: 'event_id' })
   event: Event;
 

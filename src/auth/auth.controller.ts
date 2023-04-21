@@ -8,6 +8,8 @@ import {
   Req,
   Res,
   Param,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/LocalRegister.dto';
@@ -61,11 +63,13 @@ export class AuthController {
   })
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @UseInterceptors(ClassSerializerInterceptor)
   async login(@Request() req) {
     return this.authService.login(req.user);
   }
 
   @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
