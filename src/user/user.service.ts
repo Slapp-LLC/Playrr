@@ -153,21 +153,20 @@ export class UserService {
   }
 
   async addUserSports(
-    body: { sportId: number; levelId: number },
+    body: { sport_id: number; level_id: number },
     userId: number,
   ): Promise<any> {
     if (!userId) {
       throw new BadRequestException('Invalid userId');
     }
+    const user = await this.userRepository.findOne(userId);
+    const sport = await this.sportRepository.findOne(body.sport_id);
+    const level = await this.sportLevelRepository.findOne(body.level_id);
 
     try {
       const userSport = await this.userSportRepository.findOne({
-        where: { user: userId },
+        where: { user: user, sport: sport },
       });
-      const user = await this.userRepository.findOne(userId);
-      const sport = await this.sportRepository.findOne(body.sportId);
-      const level = await this.sportLevelRepository.findOne(body.levelId);
-
       if (userSport) {
         userSport.level = level;
         userSport.user = user;

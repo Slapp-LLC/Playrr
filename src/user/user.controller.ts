@@ -61,7 +61,7 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async addUserSport(@Body() userSport: UserSportDto, @Request() req) {
-    console.log(userSport, req.user.id);
+    console.log(userSport);
     return await this.userService.addUserSports(userSport, req.user.id);
   }
 
