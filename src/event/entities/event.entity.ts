@@ -61,7 +61,7 @@ export class Event {
   @JoinColumn({ name: 'players' })
   players: Ticket[];
 
-  @ManyToOne(() => SportLevel, (level) => level.events)
+  @ManyToOne(() => SportLevel, (level) => level.events, { eager: true })
   @JoinColumn({ name: 'level_id' })
   level: SportLevel;
 }

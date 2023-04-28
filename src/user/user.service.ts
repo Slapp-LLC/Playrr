@@ -17,6 +17,7 @@ import { Role } from './entities/role.entity';
 import { SportLevel } from '../sport/entities/sportLevel.entity';
 import { Sport } from '../sport/entities/sport.entity';
 import { UserResponse } from 'src/auth/dto/userResponse.dto';
+import { use } from 'passport';
 
 @Injectable()
 export class UserService {
@@ -116,26 +117,17 @@ export class UserService {
     }
   }
 
-  async editUser(
-    userId: number,
-    userData: editProfileDto,
-    user: User,
-  ): Promise<any> {
-    if (+userId !== +user.id) {
-      throw new UnauthorizedException(
-        'You are not authorized to edit this profile',
-      );
-    }
-    const { name, lastName, age, gender } = userData;
-    const updatedUser = {
-      ...user,
-      name: name ?? user.name,
-      lastName: lastName ?? user.lastName,
-      age: age ?? user.age,
-      gender: gender ?? user.gender,
-    };
-    const rawUserData = await this.userRepository.save(updatedUser);
-    return sanitizeUser(rawUserData);
+  async editUser(userData: editProfileDto, id: User): Promise<any> {
+    const user = await this.userRepository.findOne(id);
+    console.log(user);
+    const { name, lastName, age, gender, bio, email } = userData;
+    user.bio = bio;
+    user.email = email;
+    user.name = name;
+    user.lastName = lastName;
+    user.age = age;
+    user.gender = gender;
+    return await this.userRepository.save(user);
   }
 
   async deleteUser(userId: number, user: User): Promise<any> {

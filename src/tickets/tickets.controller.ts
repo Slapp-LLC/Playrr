@@ -19,10 +19,7 @@ export class TicketController {
   @UseGuards(JwtAuthGuard)
   @Post('/join')
   async joinSport(@Body() ticketData: CreateTicketDto, @Request() req) {
-    return this.ticketService.createTicket(
-      ticketData.userId,
-      ticketData.eventId,
-    );
+    return this.ticketService.createTicket(req.user.id, ticketData.eventId);
   }
 
   @ApiOperation({ summary: 'Get my matches' })

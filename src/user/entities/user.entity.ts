@@ -23,7 +23,6 @@ export class User {
   @Column()
   lastName: string;
 
-  @Exclude()
   @Column({ unique: true })
   email: string;
 
