@@ -50,6 +50,7 @@ export class UserController {
 
   @Get('/myProfile')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   async getMyData(@Request() req) {
     return req.user;
   }
