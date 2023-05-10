@@ -20,6 +20,8 @@ import { AuthMailerService } from './mailer.service';
     ConfigModule.forRoot(),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => {
+        const jwtSecret = configService.get<string>('JWT_SECRET');
+        console.log('JWT_SECRET:', jwtSecret); // Add this line to check the secret value
         return {
           secret: configService.get<string>('JWT_SECRET'),
         };

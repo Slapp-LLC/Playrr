@@ -1,4 +1,4 @@
-import { Event } from '../../event/entities/event.entity';
+import { SportEvent } from '../../event/entities/sportEvent.entity';
 import { User } from '../../user/entities/user.entity';
 import {
   Column,
@@ -18,9 +18,11 @@ export class Ticket {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Event, (event) => event.players, { eager: true })
-  @JoinColumn({ name: 'event_id' })
-  event: Event;
+  @ManyToOne(() => SportEvent, (sportEvent) => sportEvent.players, {
+    eager: true,
+  })
+  @JoinColumn({ name: 'event' })
+  event: SportEvent;
 
   @CreateDateColumn()
   createdAt: Date;

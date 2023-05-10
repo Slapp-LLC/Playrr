@@ -119,7 +119,6 @@ export class UserService {
 
   async editUser(userData: editProfileDto, id: User): Promise<any> {
     const user = await this.userRepository.findOne(id);
-    console.log(user);
     const { name, lastName, age, gender, bio, email } = userData;
     user.bio = bio;
     user.email = email;
@@ -127,7 +126,8 @@ export class UserService {
     user.lastName = lastName;
     user.age = age;
     user.gender = gender;
-    return await this.userRepository.save(user);
+    const newUser = await this.userRepository.save(user);
+    return newUser;
   }
 
   async deleteUser(userId: number, user: User): Promise<any> {

@@ -8,12 +8,14 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EventStatus } from '../enums/EventStatus.enum';
 import { Ticket } from '../../tickets/entities/ticket.entity';
+import { GroupChat } from '../../chat/entities/groupChat.entity';
 @Entity()
-export class Event {
+export class SportEvent {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -64,4 +66,8 @@ export class Event {
   @ManyToOne(() => SportLevel, (level) => level.events, { eager: true })
   @JoinColumn({ name: 'level_id' })
   level: SportLevel;
+
+  @OneToOne(() => GroupChat, (groupChat) => groupChat.event)
+  @JoinColumn({ name: 'chat_id' })
+  groupChat: GroupChat;
 }

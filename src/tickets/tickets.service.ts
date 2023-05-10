@@ -6,15 +6,15 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ticket } from './entities/ticket.entity';
 import { Connection, Repository } from 'typeorm';
-import { Event } from '../event/entities/event.entity';
+import { SportEvent } from '../event/entities/sportEvent.entity';
 import { User } from 'src/user/entities/user.entity';
 @Injectable()
 export class TicketsService {
   constructor(
     @InjectRepository(Ticket)
     private readonly ticketRepository: Repository<Ticket>,
-    @InjectRepository(Event)
-    private readonly eventRepository: Repository<Event>,
+    @InjectRepository(SportEvent)
+    private readonly sportEventRepository: Repository<SportEvent>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly connection: Connection,
@@ -29,7 +29,7 @@ export class TicketsService {
 
   async createTicket(userId: number, eventId: number) {
     try {
-      const event = await this.eventRepository.findOne(eventId);
+      const event = await this.sportEventRepository.findOne(eventId);
       const user = await this.userRepository.findOne(userId);
       const tickets = await this.ticketRepository.find({
         where: {

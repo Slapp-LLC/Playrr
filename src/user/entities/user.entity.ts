@@ -5,12 +5,16 @@ import {
   OneToMany,
   JoinColumn,
   ManyToOne,
+  ManyToMany,
 } from 'typeorm';
 import { Role } from './role.entity';
 
 import { Exclude } from 'class-transformer';
 import { Ticket } from '../../tickets/entities/ticket.entity';
 import { UserSport } from './userSport.entity';
+import { Message } from '../../chat/entities/message.entity';
+import { GroupChat } from '../../chat/entities/groupChat.entity';
+import { UserChat } from '../../chat/entities/userChat.entity';
 
 @Entity()
 export class User {
@@ -46,6 +50,12 @@ export class User {
   @Column({ nullable: true })
   country: string;
 
+  @ManyToMany(() => GroupChat, (groupChat) => groupChat.participants)
+  groupChats: GroupChat[];
+
+  @ManyToMany(() => UserChat, (userChat) => userChat.participants)
+  userChats: UserChat[];
+
   @Exclude()
   @Column({ nullable: true })
   passwordResetToken: string;
@@ -65,4 +75,7 @@ export class User {
   @ManyToOne(() => Role, (role) => role.user, { eager: true })
   @JoinColumn({ name: 'role' })
   role: Role;
+
+  @OneToMany(() => Message, (message) => message.sender)
+  messages: Message[];
 }
