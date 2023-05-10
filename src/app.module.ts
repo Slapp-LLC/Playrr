@@ -9,6 +9,8 @@ import { EventModule } from './event/event.module';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 // import { config } from './config/variables.config';
+import { TicketModule } from './tickets/tickets.module';
+import { ChatModule } from './chat/chat.module';
 @Module({
   imports: [
     AuthModule,
@@ -20,6 +22,8 @@ import { HttpExceptionFilter } from './filters/http-exception.filter';
     UserModule,
     SportModule,
     EventModule,
+    TicketModule,
+    ChatModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: HttpExceptionFilter }],
 })

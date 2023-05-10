@@ -38,8 +38,8 @@ export class CreateEventDto {
   spots: number;
 
   @IsNotEmpty()
-  sportId: number; // Use the sportId (number) instead of the Sport entity
+  sport_id: number; // Use the sportId (number) instead of the Sport entity
 
   @IsNotEmpty()
-  levelId: number; // Use the levelId (number) instead of the SportLevel entity
+  level_id: number; // Use the levelId (number) instead of the SportLevel entity
 }

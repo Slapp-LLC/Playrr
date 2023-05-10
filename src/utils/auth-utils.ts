@@ -28,7 +28,7 @@ export async function getUserData(
   userId: string,
 ): Promise<any> {
   const userData = await usersService.findById(parseInt(userId));
-  return sanitizeUser(userData);
+  return userData;
 }
 
 export async function createLoginResponse(
@@ -37,10 +37,9 @@ export async function createLoginResponse(
   user: any,
 ): Promise<{ user: any; token: string }> {
   const token = await createToken(jwtService, user);
-  const sanitizedUser = await getUserData(usersService, user.id);
-
+  const userData = await usersService.findById(user.id);
   return {
-    user: sanitizedUser,
+    user: userData,
     token: token,
   };
 }

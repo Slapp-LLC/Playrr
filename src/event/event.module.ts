@@ -5,10 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { Sport } from 'src/sport/entities/sport.entity';
 import { SportLevel } from 'src/sport/entities/sportLevel.entity';
-import { Event } from './entities/event.entity';
+import { SportEvent } from './entities/sportEvent.entity';
+import { GroupChat } from 'src/chat/entities/groupChat.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Sport, SportLevel, Event])],
+  imports: [
+    TypeOrmModule.forFeature([User, Sport, SportLevel, SportEvent, GroupChat]),
+  ],
   controllers: [EventController],
   providers: [EventService],
 })

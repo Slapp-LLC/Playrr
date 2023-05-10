@@ -3,6 +3,7 @@ import { define } from 'typeorm-seeding';
 import { User } from '../../user/entities/user.entity';
 define(User, () => {
   const user = new User();
+
   user.name = faker.name.firstName();
   user.lastName = faker.name.lastName();
   user.email = faker.internet.email();

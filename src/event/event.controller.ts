@@ -10,10 +10,10 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Request,
+  Query,
 } from '@nestjs/common';
 import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
-import { UpdateEventStatusDto } from './dto/updateStatus-event.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { AuthGuard } from 'src/auth/guards/role-auth.guard';
@@ -36,10 +36,25 @@ export class EventController {
     return this.eventService.getAllEvents();
   }
 
+  @Get(':id')
+  @UseInterceptors(ClassSerializerInterceptor)
+  getAnEvent(@Param('id') id: string) {
+    return this.eventService.getAnEvent(+id);
+  }
+
+  @Get('filter')
+  @UseInterceptors(ClassSerializerInterceptor)
+  getFilteredEvents(
+    @Query('sportId') sportId?: number,
+    @Query('sportLevel') sportLevel?: number,
+  ) {
+    return this.eventService.getFilteredEvents(sportId, sportLevel);
+  }
+
   @UseGuards(JwtAuthGuard, AuthGuard)
   @Roles(4)
   @UseInterceptors(ClassSerializerInterceptor) // Use the ClassSerializerInterceptor
-  @Delete('delete/:id')
+  @Delete(':id/delete')
   deleteEvent(@Param('id') id: string, @Request() req) {
     const userId = req.user.id;
     return this.eventService.deleteEvent(+id, +userId);

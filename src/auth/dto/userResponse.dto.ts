@@ -1,12 +1,30 @@
+import { Exclude, Expose } from 'class-transformer';
+
+@Exclude()
 export class UserResponse {
-  name: string;
-  id: string;
-  lastName: string;
-  email: string;
-  age: number;
-  googleId: string;
-  photoUrl: string;
-  bio: string;
-  gender: string;
-  country: string;
+  @Expose()
+  readonly name: string;
+  @Expose()
+  readonly id: string;
+
+  @Expose()
+  readonly lastName: string;
+
+  @Expose()
+  readonly bio: string;
+
+  @Expose()
+  readonly country: string;
+
+  @Exclude()
+  readonly email: string;
+
+  @Exclude()
+  readonly age: number;
+
+  @Expose()
+  readonly photoUrl: string;
+
+  @Exclude()
+  readonly gender: string;
 }

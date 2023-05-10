@@ -8,6 +8,8 @@ import {
   Req,
   Res,
   Param,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/LocalRegister.dto';
@@ -34,6 +36,7 @@ export class AuthController {
   @ApiBody({ type: RegisterDto })
   @Post('register')
   async create(@Body() user: RegisterDto): Promise<any> {
+    console.log(user);
     const newUser = await this.authService.register(user);
     return await this.authService.login(newUser);
   }
@@ -60,11 +63,13 @@ export class AuthController {
   })
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @UseInterceptors(ClassSerializerInterceptor)
   async login(@Request() req) {
     return this.authService.login(req.user);
   }
 
   @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {

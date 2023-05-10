@@ -20,7 +20,6 @@ export class RegisterDto {
   @IsNotEmpty()
   readonly password?: string;
 
-  @IsNotEmpty()
   @ApiProperty()
   readonly age?: number;
 

@@ -1,6 +1,6 @@
-import { UserSport } from 'src/user/entities/userSport.entity';
+import { UserSport } from '../../user/entities/userSport.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Event } from 'src/event/entities/event.entity';
+import { SportEvent } from '../../event/entities/sportEvent.entity';
 @Entity()
 export class SportLevel {
   @PrimaryGeneratedColumn()
@@ -12,6 +12,6 @@ export class SportLevel {
   @OneToMany(() => UserSport, (userSport) => userSport.level)
   userSports: UserSport[];
 
-  @OneToMany(() => Event, (event) => event.level)
-  events: Event[];
+  @OneToMany(() => SportEvent, (sportEvent) => sportEvent.level)
+  events: SportEvent[];
 }

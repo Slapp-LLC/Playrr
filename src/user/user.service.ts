@@ -7,16 +7,17 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserResponse } from 'src/auth/dto/userResponse.dto';
-import { getConnection, getRepository, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { editProfileDto } from './dto/editProfile.dto';
-import { GoogleSignUpDto } from './dto/googleSignUp.dto';
-import { ResponseUserDto } from './dto/response-user.dto';
 import { User } from './entities/user.entity';
 import { sanitizeUser } from '../utils/sanitizeUser';
 import { UserSport } from './entities/userSport.entity';
 import UserSportDto from './dto/userSports.dto';
 import { Role } from './entities/role.entity';
+import { SportLevel } from '../sport/entities/sportLevel.entity';
+import { Sport } from '../sport/entities/sport.entity';
+import { UserResponse } from 'src/auth/dto/userResponse.dto';
+import { use } from 'passport';
 
 @Injectable()
 export class UserService {
@@ -27,19 +28,26 @@ export class UserService {
     private readonly userSportRepository: Repository<UserSport>,
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
+    @InjectRepository(SportLevel)
+    private readonly sportLevelRepository: Repository<SportLevel>,
+    @InjectRepository(Sport)
+    private readonly sportRepository: Repository<Sport>,
   ) {}
 
   async findByEmail(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ email });
   }
 
-  async findById(id: number): Promise<ResponseUserDto | undefined> {
-    const user = await this.userRepository.findOne(id);
-    if (user.password) {
-      const { password: _, ...result } = user;
-      return result;
+  async findById(id: number): Promise<any> {
+    try {
+      const user = await this.userRepository.findOne(id, {
+        relations: ['userSports', 'matches'],
+      });
+      return user;
+    } catch (error) {
+      console.log(error);
+      throw error(error);
     }
-    return user;
   }
 
   // async findOrCreateGoogle(newUser: GoogleSignUpDto): Promise<any> {
@@ -109,26 +117,17 @@ export class UserService {
     }
   }
 
-  async editUser(
-    userId: number,
-    userData: editProfileDto,
-    user: User,
-  ): Promise<any> {
-    if (+userId !== +user.id) {
-      throw new UnauthorizedException(
-        'You are not authorized to edit this profile',
-      );
-    }
-    const { name, lastName, age, gender } = userData;
-    const updatedUser = {
-      ...user,
-      name: name ?? user.name,
-      lastName: lastName ?? user.lastName,
-      age: age ?? user.age,
-      gender: gender ?? user.gender,
-    };
-    const rawUserData = await this.userRepository.save(updatedUser);
-    return sanitizeUser(rawUserData);
+  async editUser(userData: editProfileDto, id: User): Promise<any> {
+    const user = await this.userRepository.findOne(id);
+    const { name, lastName, age, gender, bio, email } = userData;
+    user.bio = bio;
+    user.email = email;
+    user.name = name;
+    user.lastName = lastName;
+    user.age = age;
+    user.gender = gender;
+    const newUser = await this.userRepository.save(user);
+    return newUser;
   }
 
   async deleteUser(userId: number, user: User): Promise<any> {
@@ -146,46 +145,34 @@ export class UserService {
   }
 
   async addUserSports(
-    userSports: UserSportDto[],
+    body: { sport_id: number; level_id: number },
     userId: number,
   ): Promise<any> {
     if (!userId) {
       throw new BadRequestException('Invalid userId');
     }
-    if (
-      !Array.isArray(userSports) ||
-      userSports.some(
-        (sport) =>
-          !sport ||
-          typeof sport !== 'object' ||
-          !sport.sportId ||
-          !sport.levelId,
-      )
-    ) {
-      throw new BadRequestException('Invalid userSports');
-    }
+    const user = await this.userRepository.findOne(userId);
+    const sport = await this.sportRepository.findOne(body.sport_id);
+    const level = await this.sportLevelRepository.findOne(body.level_id);
 
-    if (userSports.length) {
-      try {
-        for (const { sportId, levelId } of userSports) {
-          const userSport = await this.userSportRepository.findOne({
-            where: { userId, sportId },
-          });
-          if (userSport) {
-            userSport.levelId = levelId;
-            await this.userSportRepository.save(userSport);
-          } else {
-            const newUserSport = new UserSport();
-            newUserSport.userId = userId;
-            newUserSport.sportId = sportId;
-            newUserSport.levelId = levelId;
-            await this.userSportRepository.save(newUserSport);
-          }
-        }
-        return;
-      } catch (error) {
-        throw new Error(`Failed to delete user: ${error.message}`);
+    try {
+      const userSport = await this.userSportRepository.findOne({
+        where: { user: user, sport: sport },
+      });
+      if (userSport) {
+        userSport.level = level;
+        userSport.user = user;
+        userSport.sport = sport;
+        return await this.userSportRepository.save(userSport);
+      } else {
+        const newUserSport = new UserSport();
+        newUserSport.sport = sport;
+        newUserSport.user = user;
+        newUserSport.level = level;
+        return await this.userSportRepository.save(newUserSport);
       }
+    } catch (error) {
+      throw new Error(`Failed to delete user: ${error.message}`);
     }
   }
 }
