@@ -7,7 +7,7 @@ This API provides access to a range of sports-related features, including event 
 
 To get started with the API, you will need to download and install the necessary dependencies. Once you have done this, you can run the API locally and start making requests. Additionally, create a .env file and ask your supervisor for the development environment keys.
 
-### Entity Relationship Model
+## Entity Relationship Model
 ![ERM](https://playrr.s3.us-west-1.amazonaws.com/ERM-Reta.png)
 ## Authentication and Authorization
 
