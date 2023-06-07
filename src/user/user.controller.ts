@@ -9,16 +9,11 @@ import {
   UseGuards,
   Put,
   Request,
-  HttpException,
-  HttpStatus,
-  Catch,
-  UseFilters,
   UseInterceptors,
   ClassSerializerInterceptor,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { AuthGuard } from '@nestjs/passport';
 import { editProfileDto } from './dto/editProfile.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';

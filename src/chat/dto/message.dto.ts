@@ -1,5 +1,6 @@
-import { Exclude, Expose, Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { UserDTO } from './user.dto';
+import { UserChatDTO } from './userChat.dto';
 
 export class MessageDTO {
   @Expose()
@@ -11,4 +12,7 @@ export class MessageDTO {
   @Expose()
   @Type(() => UserDTO)
   sender: UserDTO;
+  @Expose()
+  @Type(() => UserChatDTO)
+  userChat: UserChatDTO;
 }
