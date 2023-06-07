@@ -1,3 +1,4 @@
+![Portada](https://playrr.s3.us-west-1.amazonaws.com/Playrr.png)
 ## Introduction
 
 This API provides access to a range of sports-related features, including event search, event creation, and event management. It is designed to be used by clients that need to interact with the sports app's backend.
@@ -6,30 +7,20 @@ This API provides access to a range of sports-related features, including event 
 
 To get started with the API, you will need to download and install the necessary dependencies. Once you have done this, you can run the API locally and start making requests. Additionally, create a .env file and ask your supervisor for the development environment keys.
 
+## Entity Relatioship Model
+![ERM](https://playrr.s3.us-west-1.amazonaws.com/ERM-Reta.png)
 ## Authentication and Authorization
 
 This API uses token-based authentication to secure endpoints. Users can obtain access tokens by logging in or creating an account. Access tokens must be included in the Authorization header of each request to protected endpoints.
 
 ## Endpoints
 
-The API provides several endpoints for interacting with the sports app's backend. These include:
-
-- `/auth/login`: Allows users to log in and obtain an access token.
-- `/auth/register`: Allows users to create a new account.
-- `/events/search`: Allows users to search for events based on a range of criteria.
-- `/events/create`: Allows users to create a new event.
-- `/events/manage`: Allows users to manage their events.
-- `/chat`: Allows users to chat with other users.
-
-Each endpoint has its own set of parameters, which are documented in the API reference.
+The API provides several endpoints for interacting with the Playrr sports app's backend. For a detailed overview and usage of each endpoint, refer to the Swagger documentation which can be accessed via the /api endpoint in your local server.
 
 ## Error Handling
 
 The API returns error responses with appropriate HTTP status codes and error messages. Errors are handled consistently across all endpoints.
 
-## Rate Limiting
-
-To prevent abuse, the API enforces rate limiting policies. Users are limited to a certain number of requests per minute.
 
 ## Deployment
 
