@@ -123,6 +123,7 @@ export class ChatGateway
         chat.id,
         content,
       );
+      console.log(messageEntity);
       const messageDTO: MessageDTO = plainToClass(MessageDTO, messageEntity, {
         strategy: 'excludeAll',
       });

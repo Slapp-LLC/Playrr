@@ -1,11 +1,11 @@
 import 'dotenv/config';
 const databaseConfig = {
   type: 'postgres',
-  host: process.env.DATABASE_HOST,
-  port: parseInt(process.env.POSTGRES_PORT, 10),
-  username: process.env.POSTGRES_USER,
-  database: process.env.POSTGRES_DB,
-  password: process.env.POSTGRES_PASSWORD,
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT, 10),
+  username: process.env.DB_USER,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
   entities: [__dirname + '/../**/*.entity.{js,ts}'],
   migrations: [__dirname + '/../database/migrations/*{.ts,.js}'],
   cli: {
